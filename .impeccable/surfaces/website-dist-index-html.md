@@ -36,3 +36,7 @@ Type: self-hosted Bodoni Moda for headings, Hanken Grotesk for supporting UI. Gr
 ## Installation clarity
 
 Preserve the approved restrained visual style. The audience includes people who have never used Terminal. Show the three installation steps under the copy button: copy the command, open Terminal using Command + Space, paste with Command + V and press Return. Explain that the app opens and clipboard permission may be requested. Product copy describes reusing earlier copied text and links from the top-center screen edge.
+
+## Hero walkthrough motion
+
+The user requested a motion video on the right of the hero to show how PasteReady works. Keep the approved Bodoni/pale-paper identity and visible installation guide. On desktop, place a short silent illustrated workflow beside the hero copy; on mobile, place the video after the explanation and before installation. Use the real native app capture with sample profile/form content. Label it an illustrated walkthrough rather than a desktop recording. The focal sequence is copy → hover at notch → copy from history → paste into a form. Provide native playback controls, text equivalent and captions; autoplay only without reduced-motion preference, pause when offscreen/hidden, and preserve manual pause intent. No personal clipboard or desktop is recorded.

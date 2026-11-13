@@ -162,7 +162,7 @@
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "Centered serif introduction."
+        "purpose": "Serif introduction beside a quiet workflow video on desktop."
       },
       "headline": {
         "displayName": "Headline",
@@ -185,6 +185,11 @@
         "name": "reduced-motion",
         "value": "animation: none; transition: none; scroll-behavior: auto",
         "purpose": "Respect prefers-reduced-motion: reduce."
+      },
+      {
+        "name": "hero-workflow",
+        "value": "12s muted H.264 loop",
+        "purpose": "Illustrated copy, notch retrieval, and paste flow; pauses offscreen/hidden, preserves manual pause, static poster for reduced motion."
       }
     ],
     "breakpoints": [
@@ -195,6 +200,10 @@
       {
         "name": "mobile",
         "value": "680px"
+      },
+      {
+        "name": "stacked-hero",
+        "value": "900px"
       }
     ]
   },

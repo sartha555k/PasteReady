@@ -51,3 +51,27 @@ for (const tab of tabs) {
     if (next) { event.preventDefault(); activateTab(next, true); }
   });
 }
+
+const workflowVideo = document.querySelector('#workflow-video');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let demoInView = false;
+let demoRequested = !reducedMotion.matches;
+function syncDemoPlayback() {
+  if (!demoInView || document.hidden || reducedMotion.matches || !demoRequested) {
+    workflowVideo.pause();
+  } else {
+    workflowVideo.play().catch(() => { /* Native controls remain available if autoplay is blocked. */ });
+  }
+}
+workflowVideo.muted = true;
+workflowVideo.addEventListener('play', () => { demoRequested = true; });
+workflowVideo.addEventListener('pause', () => {
+  if (demoInView && !document.hidden && !reducedMotion.matches) demoRequested = false;
+});
+const demoObserver = new IntersectionObserver(entries => {
+  demoInView = entries[0].isIntersecting;
+  syncDemoPlayback();
+}, { threshold: 0.25 });
+demoObserver.observe(workflowVideo);
+document.addEventListener('visibilitychange', syncDemoPlayback);
+reducedMotion.addEventListener('change', syncDemoPlayback);

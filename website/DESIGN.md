@@ -16,7 +16,7 @@ colors:
 typography:
   display:
     fontFamily: "Bodoni Moda, serif"
-    fontSize: "clamp(48px, 5.3vw, 72px)"
+    fontSize: "clamp(46px, 4.65vw, 64px)"
     fontWeight: 400
     lineHeight: 1.08
     letterSpacing: "-.025em"
@@ -83,7 +83,7 @@ components:
 
 **Creative North Star: "Quiet product field"**
 
-A pale field, centered serif introduction, and generous whitespace frame the native app. Supporting text and controls stay compact and plain. The faint dotted introduction provides texture without competing with the app captures.
+A pale field, serif introduction, and generous whitespace frame the native app. The desktop hero pairs installation guidance on the left with a silent workflow video on the right. Supporting text and controls stay compact and plain. The faint dotted introduction provides texture without competing with the app captures.
 
 This document describes only the website boundary. It derives from `dist/style.css`, `dist/index.html`, and `dist/app.js`, with the final desktop capture in `../.impeccable/review/reference-pass/desktop.png` as observational evidence. Native Mac surfaces retain their separate root design system. The user's supplied image establishes restraint, rather than a literal layout to reproduce; the earlier notch-led composition is superseded. The latest surface direction is recorded in the final section of `../.impeccable/surfaces/website-dist-index-html.md`.
 
@@ -121,7 +121,7 @@ The action-hover color marks pointer feedback. Success and error colors belong t
 Bodoni Moda's fine contrast gives the introduction its editorial voice. Hanken Grotesk makes navigation, instructions, and native feature descriptions easy to scan. The source fonts use `font-display: swap` and are preloaded by the document.
 
 ### Hierarchy
-- **Display:** the centered introduction; balanced wrapping, desktop clamp in frontmatter.
+- **Display:** the serif introduction; balanced wrapping, desktop clamp in frontmatter.
 - **Headline:** section headings, using the same serif at a smaller scale.
 - **Intro:** muted supporting text, limited to 54 characters in width.
 - **Body:** feature descriptions; FAQ copy uses a slightly roomier line-height (1.7).
@@ -184,3 +184,9 @@ All interactive elements use a 2px focus outline with 5px offset. Reduced-motion
 ## Installation guidance
 
 The hero explains the product through a concrete action: moving to the top-center screen edge to reuse previous copies. A visible three-step ordered list stays directly below the copy action, rather than inside a disclosure. It explains copying the command, opening the built-in Terminal app with Command + Space, and pasting with Command + V before pressing Return. A final sentence explains that PasteReady opens and may request clipboard access. The guide is left-aligned within a 440px maximum width, uses 14px/1.55 supporting text and a 15px medium Hanken Grotesk heading, and stacks naturally on mobile. The command itself remains inspectable in its disclosure. Copy success points to the next keyboard action.
+
+## Hero workflow video
+
+At widths above 900px, the hero uses a 1240px maximum grid with a 62px gap and columns of 1fr / 1.08fr. Copy and installation instructions align left. The right-hand 4:3 video has a fine border and 14px radius. At 900px and below, title, introduction, demo, and installation stack in that order. Existing serif typography and pale dotted field remain.
+
+The 12-second silent H.264 video illustrates copying a profile link, opening PasteReady at the notch, selecting the copy icon, and pasting into a form. It composites an actual native app capture over illustrative sample windows. Native controls and English captions remain available. Autoplay is muted and pauses offscreen or when the document is hidden; manual pause persists. Reduced-motion users initially see a static poster and may play manually.
