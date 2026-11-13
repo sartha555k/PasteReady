@@ -92,7 +92,18 @@ final class NotchController {
             guard let self, !self.isClosing, self.state.phase > 0, self.panel.isKeyWindow,
                   event.window === self.panel, self.panel.attachedSheet == nil else { return event }
             switch event.keyCode {
-            case 53: self.close(); return nil
+            case 53:
+                if self.state.previewID != nil { self.state.closePreview() }
+                else { self.close() }
+                return nil
+            case 49:
+                guard event.modifierFlags.intersection([.command, .control, .option, .shift]).isEmpty else { return event }
+                // Preserve literal spaces during search editing. Arrow navigation
+                // switches Space back to preview without clearing the query.
+                guard self.state.previewID != nil || !self.state.focusSearch ||
+                        self.state.query.isEmpty || self.state.navigatingItems else { return event }
+                if !event.isARepeat { self.state.togglePreview(links: self.store.sorted) }
+                return nil
             case 125: self.state.move(1, links: self.store.sorted); return nil
             case 126: self.state.move(-1, links: self.store.sorted); return nil
             case 123, 124:
@@ -179,6 +190,7 @@ final class NotchController {
             return
         }
         if panel.isVisible, state.phase > 0 {
+            if state.previewID != nil { outsideSince = nil; return }
             if visibleRect.insetBy(dx: -14, dy: -14).contains(point) ||
                 (!openedByKeyboard && activeGeometry?.keepsHoverOpen(at: point) == true) {
                 outsideSince = nil
@@ -200,6 +212,8 @@ final class NotchController {
         let wasVisible = panel.isVisible
         isClosing = false
         state.opening = true
+        state.previewID = nil
+        state.navigatingItems = false
         state.scrollSession = UUID()
         if let frontmost = NSWorkspace.shared.frontmostApplication,
            frontmost.processIdentifier != ProcessInfo.processInfo.processIdentifier {
@@ -278,6 +292,7 @@ final class NotchController {
             self.panel.orderOut(nil)
             self.isClosing = false
             self.state.phase = 0
+            self.state.previewID = nil
             self.panel.alphaValue = 1
             // An outside click may already have focused a different app. Restore
             // only while we still own activation, and never when opening Settings.

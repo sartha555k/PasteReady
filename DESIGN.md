@@ -196,3 +196,5 @@ Opening uses a single continuous spring (response 0.28s, damping fraction 0.92) 
 - **Don't** replace the black notch surface with remote imagery or fetched favicons.
 - **Don't** invent fixed colors for native semantic settings materials.
 - **Don't** treat illustrative renders or browser component previews as an approved native comp.
+
+Preview uses the existing list region, keeping the list mounted underneath to preserve position. A compact title row contains the selected item name, the contextual Copy/Paste action, and a close button. A 12pt rounded tonal surface contains a read-only native NSTextView with 13pt SF text and 12pt insets. The footer exposes Space preview / Space close preview in the same position. Preview does not introduce another window, remote content, or a new visual identity.

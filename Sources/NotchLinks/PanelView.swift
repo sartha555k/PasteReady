@@ -15,6 +15,9 @@ final class PanelState: ObservableObject {
     @Published var pastesSelection = false
     @Published var opening = false
     @Published var scrollSession = UUID()
+    @Published var previewID: UUID?
+    @Published var navigatingItems = false
+    private var searchFocusBeforePreview = false
     var choose: ((ClipboardEntry) -> Void)?
     var dismiss: (() -> Void)?
     var settings: (() -> Void)?
@@ -29,15 +32,34 @@ final class PanelState: ObservableObject {
         guard !items.isEmpty else { return }
         let current = items.firstIndex { $0.id == selectedID } ?? (offset > 0 ? -1 : items.count)
         selectedID = items[min(max(current + offset, 0), items.count - 1)].id
+        navigatingItems = true
+        if previewID != nil { previewID = selectedID }
     }
     func moveFilter(_ offset: Int, links: [ClipboardEntry]) {
         let current = favoritesOnly ? 2 : linksOnly ? 1 : 0
         let next = min(max(current + offset, 0), 2)
         guard next != current else { return }
+        if previewID != nil { closePreview() }
         favoritesOnly = next == 2
         linksOnly = next == 1
         selectedID = filtered(links).first?.id
         scrollSession = UUID()
+        navigatingItems = true
+    }
+    func togglePreview(links: [ClipboardEntry]) {
+        if previewID != nil { closePreview(); return }
+        let items = filtered(links)
+        guard let item = items.first(where: { $0.id == selectedID }) ?? items.first else { return }
+        searchFocusBeforePreview = focusSearch
+        focusSearch = false
+        navigatingItems = true
+        selectedID = item.id
+        previewID = item.id
+    }
+    func closePreview() {
+        guard previewID != nil else { return }
+        previewID = nil
+        focusSearch = searchFocusBeforePreview
     }
 }
 
@@ -51,6 +73,7 @@ struct PanelView: View {
     @State private var editedTitle = ""
 
     private var items: [ClipboardEntry] { state.filtered(store.sorted) }
+    private var previewItem: ClipboardEntry? { items.first { $0.id == state.previewID } }
     private var expanded: Bool { state.phase == 2 }
     private var shapeWidth: CGFloat { expanded ? 480 : state.notchWidth }
     private var shapeHeight: CGFloat { expanded ? 468 + state.notchHeight : state.notchHeight }
@@ -84,11 +107,16 @@ struct PanelView: View {
         .preferredColorScheme(.dark)
         .onChange(of: state.focusSearch) { _, value in searchFocused = value }
         .onChange(of: searchFocused) { _, value in state.focusSearch = value }
-        .onChange(of: state.query) { _, _ in state.selectedID = items.first?.id }
-        .onChange(of: state.linksOnly) { _, _ in state.selectedID = items.first?.id }
-        .onChange(of: state.favoritesOnly) { _, _ in state.selectedID = items.first?.id }
+        .onChange(of: state.query) { _, _ in
+            state.closePreview()
+            state.navigatingItems = false
+            state.selectedID = items.first?.id
+        }
+        .onChange(of: state.linksOnly) { _, _ in state.closePreview(); state.selectedID = items.first?.id }
+        .onChange(of: state.favoritesOnly) { _, _ in state.closePreview(); state.selectedID = items.first?.id }
         .onChange(of: items.map(\.id)) { _, ids in
             if !ids.contains(state.selectedID ?? UUID()) { state.selectedID = ids.first }
+            if let id = state.previewID, !ids.contains(id) { state.closePreview() }
         }
         .alert("Rename item", isPresented: Binding(get: { editing != nil }, set: { if !$0 { editing = nil } })) {
             TextField("Name", text: $editedTitle)
@@ -151,7 +179,7 @@ struct PanelView: View {
                     NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Pasteboard")!)
                 }.font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.orange)
             }
-            Group {
+            ZStack {
                 if items.isEmpty { emptyState }
                 else {
                     ClipboardScrollView(ids: items.map(\.id), selectedID: state.selectedID,
@@ -160,7 +188,11 @@ struct PanelView: View {
                             ForEach(items) { link in row(link).frame(height: 52) }
                         }
                     }
+                    .opacity(previewItem == nil ? 1 : 0)
+                    .allowsHitTesting(previewItem == nil)
+                    .accessibilityHidden(previewItem != nil)
                 }
+                if let link = previewItem { fullPreview(link) }
             }.frame(maxHeight: .infinity)
             HStack(spacing: 5) {
                 if let message = state.message {
@@ -174,11 +206,38 @@ struct PanelView: View {
                     Text(state.pastesSelection ? "paste" : "copy")
                 }
                 Spacer()
+                Button { state.togglePreview(links: store.sorted) } label: {
+                    Text(state.previewID == nil ? "Space preview" : "Space close preview")
+                }.buttonStyle(.plain).disabled(items.isEmpty)
+                    .help(state.previewID == nil ? "Show full preview" : "Close full preview")
+                    .accessibilityLabel(state.previewID == nil ? "Show full preview" : "Close full preview")
+                Text("·").padding(.horizontal, 3)
                 Text("esc to close")
             }.font(.system(size: 11)).foregroundStyle(.white.opacity(0.55))
         }
         .padding(.horizontal, 22).padding(.bottom, 19)
         .frame(width: 480, height: 448)
+    }
+    private func fullPreview(_ link: ClipboardEntry) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: link.symbol).foregroundStyle(.white.opacity(0.7))
+                Text(link.title).font(.system(size: 13, weight: .medium)).lineLimit(2)
+                Spacer(minLength: 5)
+                Button(state.pastesSelection ? "Paste" : "Copy") { state.choose?(link) }
+                    .buttonStyle(.plain).font(.system(size: 12, weight: .medium))
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                    .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+                Button { state.closePreview() } label: {
+                    Image(systemName: "xmark").font(.system(size: 11, weight: .semibold)).frame(width: 26, height: 28)
+                }.buttonStyle(.plain).foregroundStyle(.white.opacity(0.65)).accessibilityLabel("Close full preview")
+            }
+            ClipboardPreviewText(id: link.id, text: link.content)
+                .background(.white.opacity(0.055), in: RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.black)
     }
     private func filterButton(_ name: String, favorites: Bool) -> some View {
         Button { state.favoritesOnly = favorites; state.linksOnly = false } label: {

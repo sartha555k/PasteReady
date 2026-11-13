@@ -239,17 +239,64 @@ struct InteractionTests {
         controller.close()
         pump(for: 0.2)
         print("PASS: Left/Right switch All, Links and Pinned, preserving search and vertical navigation")
+
+        let fullText = String(repeating: "A complete line with a tab\tand a link https://example.com/details.\n", count: 700)
+        let longItem = ClipboardEntry(content: fullText, title: "Full text preview")
+        store.links = [longItem, ClipboardEntry(content: "https://example.com/second", title: "Second")]
+        controller.state.linksOnly = false
+        controller.state.favoritesOnly = false
+        controller.open(keyboard: true)
+        pump(for: 0.08)
+        controller.state.selectedID = longItem.id
+        let clipboardBeforePreview = pasteboard.string(forType: .string)
+        let pastesBeforePreview = pasteHandler.pasted.count
+        key(49, characters: " ")
+        precondition(controller.state.previewID == longItem.id && !controller.state.focusSearch)
+        guard let previewRoot = NSApp.keyWindow?.contentView,
+              let preview = findPreview(in: previewRoot) else { preconditionFailure("Missing read-only native preview") }
+        precondition(preview.string == fullText && !preview.isEditable && preview.isSelectable,
+            "Full preview must retain every line and tab without editing")
+        key(49, characters: " ", repeating: true)
+        precondition(controller.state.previewID == longItem.id, "Held Space must not flicker the preview")
+        key(49, characters: " ")
+        precondition(controller.state.previewID == nil && controller.hasKeyboardFocus)
+        precondition(pasteboard.string(forType: .string) == clipboardBeforePreview && pasteHandler.pasted.count == pastesBeforePreview,
+            "Preview must not copy or paste")
+        print("PASS: Space toggles a full, read-only preview and ignores key repeats")
+
+        controller.state.query = "Full"
+        pump(for: 0.05)
+        controller.state.focusSearch = true
+        pump(for: 0.03)
+        key(49, characters: " ")
+        precondition(controller.state.previewID == nil && controller.state.query.contains(" ") && controller.state.query.count == 5,
+            "Typing a space in a search must not open preview")
+        controller.state.query = ""
+        pump(for: 0.04)
+        key(125, characters: "\u{F701}")
+        key(49, characters: " ")
+        precondition(controller.state.previewID != nil)
+        key(53, characters: "\u{1B}")
+        precondition(controller.state.previewID == nil && controller.hasKeyboardFocus,
+            "First Escape must close only the preview")
+        controller.state.togglePreview(links: store.sorted)
+        precondition(controller.state.previewID != nil)
+        controller.state.togglePreview(links: store.sorted)
+        precondition(controller.state.previewID == nil, "The visible button's toggle action must close preview on the second click")
+        controller.close()
+        pump(for: 0.2)
+        print("PASS: search spaces, Escape and the preview button retain the expected behavior")
         inputWindow.orderOut(nil)
         print("PASS: interrupted close/reopen stays open and keyboard ready")
-        print("All 13 native interaction checks passed. Paste dispatch was mocked; no system keys were posted.")
+        print("All 15 native interaction checks passed. Paste dispatch was mocked; no system keys were posted.")
     }
 
-    @MainActor static func key(_ code: UInt16, characters: String, modifiers: NSEvent.ModifierFlags = []) {
+    @MainActor static func key(_ code: UInt16, characters: String, modifiers: NSEvent.ModifierFlags = [], repeating: Bool = false) {
         guard let window = NSApp.keyWindow,
               let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: modifiers,
                 timestamp: ProcessInfo.processInfo.systemUptime, windowNumber: window.windowNumber,
                 context: nil, characters: characters, charactersIgnoringModifiers: characters,
-                isARepeat: false, keyCode: code) else { preconditionFailure("No key window for test event") }
+                isARepeat: repeating, keyCode: code) else { preconditionFailure("No key window for test event") }
         // Send only through this test application's queue, never the system event stream.
         NSApp.postEvent(event, atStart: false)
         pump(for: 0.06)
@@ -268,6 +315,11 @@ struct InteractionTests {
     @MainActor static func findScroll(in view: NSView) -> ClipboardScrollContainer? {
         if let scroll = view as? ClipboardScrollContainer { return scroll }
         for child in view.subviews { if let scroll = findScroll(in: child) { return scroll } }
+        return nil
+    }
+    @MainActor static func findPreview(in view: NSView) -> NSTextView? {
+        if let text = view as? NSTextView, !text.isEditable && text.isSelectable { return text }
+        for child in view.subviews { if let text = findPreview(in: child) { return text } }
         return nil
     }
 

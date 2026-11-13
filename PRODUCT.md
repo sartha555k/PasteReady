@@ -29,3 +29,6 @@ Black popover, native Apple-level visual restraint, smooth spring-like expansion
 - Keep normal clipboard behavior intact.
 - Make frequent links easy to retrieve.
 - Store captured content locally.
+
+## Preview and scope
+Space or the visible preview control toggles a read-only full-content preview. Escape returns to the list first. Preview preserves all captured text, including line breaks and tabs, without fetching URLs or changing the clipboard. Spaces remain available while editing search. In-app update notifications are explicitly deferred by the user.

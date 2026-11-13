@@ -19,6 +19,16 @@ struct RenderPreview {
         ]
         state.selectedID = store.links.first?.id
         try render(PanelView(store: store, state: state), size: NSSize(width: 540, height: 570), to: directory.appendingPathComponent("populated.png"))
+        state.previewID = store.links.first?.id
+        try render(PanelView(store: store, state: state), size: NSSize(width: 540, height: 570), to: directory.appendingPathComponent("preview-link.png"))
+        let example = ClipboardEntry(content: "Hello,\n\nI’m interested in the software engineer role. I enjoy building tools that make everyday work simpler, with careful attention to keyboard access and interaction quality.\n\nPortfolio: https://example.com/portfolio\nCode: https://github.com/your-name\n\nI’d welcome an opportunity to discuss the role and share more about my work.\n\nThank you for your time.", title: "Sample introduction")
+        store.links.append(example)
+        state.selectedID = example.id
+        state.previewID = example.id
+        try render(PanelView(store: store, state: state), size: NSSize(width: 540, height: 570), to: directory.appendingPathComponent("preview-text.png"))
+        store.links.removeAll { $0.id == example.id }
+        state.previewID = nil
+        state.selectedID = store.links.first?.id
         state.detached = true
         state.pastesSelection = true
         state.notchHeight = 0
@@ -34,7 +44,7 @@ struct RenderPreview {
         store.links = []
         try render(PanelView(store: store, state: state), size: NSSize(width: 540, height: 570), to: directory.appendingPathComponent("empty.png"))
         try render(SettingsView(store: store, shortcutAvailable: true), size: NSSize(width: 480, height: 630), to: directory.appendingPathComponent("settings.png"))
-        print("Rendered six native SwiftUI states to \(directory.path)")
+        print("Rendered eight native SwiftUI states to \(directory.path)")
     }
     @MainActor static func render<V: View>(_ view: V, size: NSSize, to file: URL) throws {
         let host = NSHostingView(rootView: view.background(Color(red: 0.13, green: 0.15, blue: 0.18)).environment(\.colorScheme, .dark))
