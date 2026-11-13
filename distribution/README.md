@@ -4,7 +4,7 @@
 
 ## Status
 
-The installer and release preparation are implemented and locally tested. The hosting repository is `sartha555k/PasteReady`. The first public release must finish before the one-command URL is usable. Subsequent matching version tags are built and published by `.github/workflows/release.yml`.
+The installer and release preparation are implemented and locally tested. The hosting repository is `sartha555k/PasteReady`. The public installer is available from the latest GitHub Release. Subsequent matching version tags are built and published by `.github/workflows/release.yml`.
 
 ## Prepare a release
 

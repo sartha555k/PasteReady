@@ -61,7 +61,7 @@ Arrow-key scrolling leaves the viewport still while the selected row is visible.
 
 ## One-command terminal installation
 
-After the first GitHub Release is published, install with:
+Install the latest release with:
 
 ```sh
 curl -fsSL --proto '=https' --proto-redir '=https' https://github.com/sartha555k/PasteReady/releases/latest/download/install.sh | sh
