@@ -11,14 +11,22 @@ struct SettingsView: View {
     @State private var confirmClear = false
     @State private var pasteEnabled = PasteService.isEnabled
 
+    private func preference(_ title: String, isOn: Binding<Bool>) -> some View {
+        HStack {
+            Text(title)
+            Spacer(minLength: 12)
+            Toggle(title, isOn: isOn).labelsHidden().accessibilityLabel(title)
+        }
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 22) {
+        VStack(alignment: .leading, spacing: 20) {
             HStack(spacing: 14) {
-                Image(systemName: "doc.on.clipboard").font(.system(size: 31, weight: .light))
-                    .frame(width: 60, height: 60).background(.quaternary, in: RoundedRectangle(cornerRadius: 16))
+                Image(systemName: "doc.on.clipboard").font(.system(size: 27, weight: .regular))
+                    .frame(width: 54, height: 54).background(.quaternary, in: RoundedRectangle(cornerRadius: 15))
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("PasteReady").font(.system(size: 23, weight: .semibold))
-                    Text("Clipboard history, within reach.").foregroundStyle(.secondary)
+                    Text("PasteReady").font(.system(size: 24, weight: .semibold))
+                    Text("Clipboard history, within reach.").font(.system(size: 12)).foregroundStyle(.secondary)
                 }
             }
             VStack(alignment: .leading, spacing: 10) {
@@ -27,15 +35,17 @@ struct SettingsView: View {
                 Label("With ⌘⇧V, choose an item to paste at your cursor.", systemImage: "return")
             }.font(.system(size: 13)).foregroundStyle(.secondary)
             Divider()
-            VStack(alignment: .leading, spacing: 15) {
-                Toggle("Open at notch or top screen edge", isOn: Binding(get: { !disableHover }, set: { disableHover = !$0 }))
-                Toggle("Pause clipboard history", isOn: $store.paused)
-                Toggle("Launch at login", isOn: $launchAtLogin)
+            VStack(alignment: .leading, spacing: 14) {
+                preference("Open at notch or top screen edge", isOn: Binding(get: { !disableHover }, set: { disableHover = !$0 }))
+                preference("Pause clipboard history", isOn: $store.paused)
+                preference("Launch at login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, enabled in
                         do { if enabled { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() } }
                         catch { loginError = "Couldn’t update login settings. Try System Settings → General → Login Items."; launchAtLogin = SMAppService.mainApp.status == .enabled }
                     }
             }.toggleStyle(.switch).font(.system(size: 13))
+                .padding(16).frame(maxWidth: .infinity, alignment: .leading)
+                .background(.quaternary.opacity(0.45), in: RoundedRectangle(cornerRadius: 14))
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Direct paste").font(.system(size: 13, weight: .medium))
@@ -51,7 +61,7 @@ struct SettingsView: View {
             }
             if let loginError { Text(loginError).font(.caption).foregroundStyle(.orange) }
             VStack(alignment: .leading, spacing: 8) {
-                Text("Local clipboard history").font(.system(size: 13, weight: .semibold))
+                Label("Local clipboard history", systemImage: "internaldrive").font(.system(size: 13, weight: .semibold))
                 Text("Up to 20 recent text items, plus your pins. Stored on this Mac, with no network requests. Images and files aren’t captured. Items marked private by password managers are skipped.")
                     .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 Text("If macOS asks to read your clipboard, choose Allow. You can change this in Privacy & Security → Paste from Other Apps.")

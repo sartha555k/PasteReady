@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-12T18:12:13.449426+00:00",
+  "generatedAt": "2026-11-13T13:11:11.486146+00:00",
   "title": "Design System: PasteReady",
   "extensions": {
     "colorMeta": {
@@ -154,7 +154,7 @@
       "refersTo": "copy-button",
       "description": "Illustrative web preview of the persistent native copy icon; SVG is a preview surrogate for SF Symbols.",
       "html": "<button class=\"ds-copy\" aria-label=\"Copy item\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"12\" height=\"13\" rx=\"2\"/><path d=\"M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3\"/></svg></button>",
-      "css": ".ds-copy{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:inline-flex;align-items:center;justify-content:center;width:28pt;height:32pt;background:transparent;color:rgba(255,255,255,.8);border:0;cursor:pointer}.ds-copy:hover{color:white}.ds-copy:focus-visible{outline:2px solid white;outline-offset:2px}.ds-copy:active{opacity:.7}"
+      "css": ".ds-copy{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:inline-flex;align-items:center;justify-content:center;width:28pt;height:30pt;background:transparent;color:rgba(255,255,255,.8);border:0;cursor:pointer}.ds-copy:hover{color:white}.ds-copy:focus-visible{outline:2px solid white;outline-offset:2px}.ds-copy:active{opacity:.7}"
     },
     {
       "name": "Search field",
@@ -162,14 +162,14 @@
       "refersTo": "search-field",
       "description": "Illustrative preview; native focus and TextField behavior remain platform-owned.",
       "html": "<input class=\"ds-search\" aria-label=\"Search clipboard\" placeholder=\"Search your clipboard\"/>",
-      "css": ".ds-search{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:rgba(255,255,255,.085);color:white;height:39pt;padding:0 12pt;border:0;border-radius:11pt;font-size:14pt}.ds-search:hover{background:rgba(255,255,255,.1)}.ds-search:focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:2px} .ds-search::placeholder{color:rgba(255,255,255,.55)}"
+      "css": ".ds-search{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:rgba(255,255,255,.065);color:white;height:40pt;padding:0 12pt;border:0;border-radius:11pt;font-size:13pt}.ds-search:hover{background:rgba(255,255,255,.1)}.ds-search:focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:2px} .ds-search::placeholder{color:rgba(255,255,255,.55)}"
     },
     {
       "name": "Clipboard filters",
       "kind": "nav",
       "description": "All, Links, Pinned filter strip; browser focus treatment is illustrative.",
       "html": "<nav class=\"ds-filters\" aria-label=\"Clipboard filters\"><button aria-pressed=\"true\">All</button><button aria-pressed=\"false\">Links</button><button aria-pressed=\"false\">Pinned</button></nav>",
-      "css": ".ds-filters{display:flex;gap:5pt;background:black;padding:8pt}.ds-filters button{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:12pt;font-weight:500;border:0;border-radius:999pt;padding:6pt 10pt;color:rgba(255,255,255,.6);background:transparent;cursor:pointer}.ds-filters button[aria-pressed=true]{background:rgba(255,255,255,.13);color:white}.ds-filters button:hover{color:white}.ds-filters button:focus-visible{outline:2px solid white;outline-offset:2px}.ds-filters button:active{opacity:.7}"
+      "css": ".ds-filters{display:flex;gap:2pt;background:rgba(255,255,255,.045);padding:3pt;border-radius:10pt}.ds-filters button{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:11.5pt;font-weight:500;border:0;border-radius:7pt;padding:0 13pt;height:25pt;color:rgba(255,255,255,.6);background:transparent;cursor:pointer}.ds-filters button[aria-pressed=true]{background:rgba(255,255,255,.11);color:white}.ds-filters button:hover{color:white}.ds-filters button:focus-visible{outline:2px solid white;outline-offset:2px}.ds-filters button:active{opacity:.7}"
     },
     {
       "name": "Selected filter",
@@ -177,7 +177,7 @@
       "refersTo": "selected-filter",
       "description": "Selected tonal capsule preview.",
       "html": "<button class=\"ds-chip\" aria-pressed=\"true\">Pinned</button>",
-      "css": ".ds-chip{font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:white;background:rgba(255,255,255,.13);border:0;border-radius:999pt;padding:6pt 10pt;font-size:12pt;font-weight:500;cursor:pointer}.ds-chip:hover{background:rgba(255,255,255,.16)}.ds-chip:focus-visible{outline:2px solid white;outline-offset:2px}.ds-chip:active{opacity:.7}"
+      "css": ".ds-chip{font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:white;background:rgba(255,255,255,.11);border:0;border-radius:7pt;padding:0 13pt;height:25pt;font-size:11.5pt;font-weight:500;cursor:pointer}.ds-chip:hover{background:rgba(255,255,255,.16)}.ds-chip:focus-visible{outline:2px solid white;outline-offset:2px}.ds-chip:active{opacity:.7}"
     },
     {
       "name": "Selected history row",
@@ -185,7 +185,7 @@
       "refersTo": "selected-row",
       "description": "Illustrative row preview with persistent copy affordance; native row actions are separate controls.",
       "html": "<div class=\"ds-row\"><div><strong>Profile link</strong><small>https://example.com/profile</small></div><button aria-label=\"Copy Profile link\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"12\" height=\"13\" rx=\"2\"/><path d=\"M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3\"/></svg></button></div>",
-      "css": ".ds-row{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:10pt;background:rgb(12% 32% 66%);color:white;border-radius:12pt;padding:8pt 9pt}.ds-row strong{display:block;font-size:13pt;font-weight:500}.ds-row small{display:block;margin-top:4pt;font-size:11pt;color:rgba(255,255,255,.8)}.ds-row button{display:flex;align-items:center;justify-content:center;width:28pt;height:32pt;border:0;background:transparent;color:rgba(255,255,255,.8);cursor:pointer}.ds-row button:hover{color:white}.ds-row button:focus-visible{outline:2px solid white;outline-offset:2px}.ds-row button:active{opacity:.7}"
+      "css": ".ds-row{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:10pt;background:rgb(5.5% 11.5% 20%);color:white;border-radius:12pt;padding:10pt 9pt}.ds-row strong{display:block;font-size:13pt;font-weight:500}.ds-row small{display:block;margin-top:4pt;font-size:11pt;color:rgba(255,255,255,.8)}.ds-row button{display:flex;align-items:center;justify-content:center;width:28pt;height:30pt;border:0;background:transparent;color:rgba(255,255,255,.8);cursor:pointer}.ds-row button:hover{color:white}.ds-row button:focus-visible{outline:2px solid white;outline-offset:2px}.ds-row button:active{opacity:.7}"
     },
     {
       "name": "Notch silhouette",
@@ -193,11 +193,11 @@
       "refersTo": "notch-panel",
       "description": "Illustrative cropped container preview; source layout uses measured notch height and native point geometry.",
       "html": "<div class=\"ds-notch\">Clipboard</div>",
-      "css": ".ds-notch{font-family:-apple-system,BlinkMacSystemFont,sans-serif;width:280pt;max-width:100%;padding:40pt 22pt 19pt;background:black;color:white;font-size:20pt;font-weight:600;border-radius:9pt 9pt 28pt 28pt;box-shadow:0 14pt 24pt rgba(0,0,0,.32)}"
+      "css": ".ds-notch{font-family:-apple-system,BlinkMacSystemFont,sans-serif;width:280pt;max-width:100%;padding:40pt 22pt 19pt;background:black;color:white;font-size:19pt;font-weight:600;border-radius:9pt 9pt 28pt 28pt;box-shadow:0 14pt 24pt rgba(0,0,0,.32)}"
     }
   ],
   "narrative": {
-    "overview": "Native Apple-level restraint: a black surface that feels continuous with the camera housing, compact SF text, and SF Symbols. Smooth, slightly bubbly anticipation supplies personality without decorative imagery. The user supplied this language; no additional named creative metaphor has been approved.\n\nThe picker uses tonal layers for structure and a blue row for selection. Settings use standard SwiftUI controls and semantic system materials. This is a code-led implementation, with no approved visual comp; native renders are illustrative review evidence. Finish review cleared the motion finding and accepted shipment at the captured and source-reviewed scope.",
+    "overview": "Native Apple-level restraint: a black surface that feels continuous with the camera housing, compact SF text, and SF Symbols. Smooth, slightly bubbly anticipation supplies personality without decorative imagery. The user supplied this language; no additional named creative metaphor has been approved.\n\nThe picker uses tonal layers for structure and a blue row for selection. Settings use standard SwiftUI controls and semantic system materials. This is a code-led implementation, with no approved visual comp; native renders are illustrative review evidence. The premium refinement uses muted navy selection, grouped filters, keyboard keycaps, and aligned settings switches. Native renders are captured in .impeccable/review/premium/.",
     "keyCharacteristics": [
       "Black notch silhouette with softly rounded lower corners.",
       "Native system typography and SF Symbols.",

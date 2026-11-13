@@ -2,22 +2,22 @@
 name: PasteReady
 description: Native clipboard history at the Mac notch.
 colors:
-  selection-blue: "rgb(12% 32% 66%)"
+  selection-blue: "rgb(5.5% 11.5% 20%)"
   notch-black: "#000000"
   primary-white: "#ffffff"
-  secondary-white: "rgb(100% 100% 100% / 60%)"
-  hint-white: "rgb(100% 100% 100% / 55%)"
-  field-layer: "rgb(100% 100% 100% / 8.5%)"
-  selected-chip-layer: "rgb(100% 100% 100% / 13%)"
-  hover-layer: "rgb(100% 100% 100% / 7%)"
+  secondary-white: "rgb(100% 100% 100% / 64%)"
+  hint-white: "rgb(100% 100% 100% / 54%)"
+  field-layer: "rgb(100% 100% 100% / 6.5%)"
+  selected-chip-layer: "rgb(100% 100% 100% / 11%)"
+  hover-layer: "rgb(100% 100% 100% / 4.5%)"
 typography:
   settings-headline:
     fontFamily: "SF system"
-    fontSize: "23pt"
+    fontSize: "24pt"
     fontWeight: 600
   panel-title:
     fontFamily: "SF system"
-    fontSize: "20pt"
+    fontSize: "19pt"
     fontWeight: 600
   empty-title:
     fontFamily: "SF system"
@@ -25,7 +25,7 @@ typography:
     fontWeight: 500
   search:
     fontFamily: "SF system"
-    fontSize: "14pt"
+    fontSize: "13pt"
     fontWeight: 400
   row-title:
     fontFamily: "SF system"
@@ -44,41 +44,41 @@ typography:
     fontSize: "11pt"
     fontWeight: 400
 rounded:
-  row-icon: "10pt"
+  row-icon: "9pt"
   search: "11pt"
   row: "12pt"
-  settings-icon: "16pt"
+  settings-icon: "15pt"
   panel-bottom: "28pt"
 spacing:
   text-gap: "4pt"
   control-gap: "5pt"
-  row-inset-y: "8pt"
+  row-inset-y: "10pt"
   row-inset-x: "9pt"
   row-gap: "10pt"
   field-inset-x: "12pt"
-  content-gap: "14pt"
+  content-gap: "12pt"
   panel-inset-x: "22pt"
   settings-inset: "28pt"
 components:
   copy-button:
-    textColor: "rgb(100% 100% 100% / 80%)"
+    textColor: "rgb(100% 100% 100% / 76%)"
     width: "28pt"
-    height: "32pt"
+    height: "30pt"
   search-field:
     backgroundColor: "{colors.field-layer}"
     textColor: "{colors.primary-white}"
     rounded: "{rounded.search}"
-    height: "39pt"
+    height: "40pt"
     padding: "0pt 12pt"
   selected-filter:
     backgroundColor: "{colors.selected-chip-layer}"
     textColor: "{colors.primary-white}"
-    padding: "6pt 10pt"
+    padding: "0pt 13pt"
   selected-row:
     backgroundColor: "{colors.selection-blue}"
     textColor: "{colors.primary-white}"
     rounded: "{rounded.row}"
-    padding: "8pt 9pt"
+    padding: "10pt 9pt"
   hover-row:
     backgroundColor: "{colors.hover-layer}"
     rounded: "{rounded.row}"
@@ -93,7 +93,7 @@ components:
 
 Native Apple-level restraint: a black surface that feels continuous with the camera housing, compact SF text, and SF Symbols. Smooth, slightly bubbly anticipation supplies personality without decorative imagery. The user supplied this language; no additional named creative metaphor has been approved.
 
-The picker uses tonal layers for structure and a blue row for selection. Settings use standard SwiftUI controls and semantic system materials. This is a code-led implementation, with no approved visual comp; native renders are illustrative review evidence. Finish review cleared the motion finding and accepted shipment at the captured and source-reviewed scope.
+The picker uses tonal layers for structure and a blue row for selection. Settings use standard SwiftUI controls and semantic system materials. This is a code-led implementation, with no approved visual comp; native renders are illustrative review evidence. The premium refinement uses muted navy selection, grouped filters, keyboard keycaps, and aligned settings switches. Native captures provide review evidence; this feature branch awaits user review.
 
 **Key Characteristics:**
 - Black notch silhouette with softly rounded lower corners.
@@ -154,17 +154,17 @@ The silhouette uses a structural SwiftUI shadow: black at 32% opacity, radius 24
 
 ## Shapes
 
-The panel is an uneven rounded rectangle: upper corners 9pt, expanded lower corners using the panel-bottom token, collapsed lower corners 15pt. Anticipation adds 26pt to the measured notch width and 11pt to its height. Row, search, and symbol-tile radii are distinct small curves; filters and count use capsules. The settings icon sits in a 60pt square with the settings-icon radius. Native settings controls retain platform geometry. No custom border system is present.
+The panel is an uneven rounded rectangle: upper corners 9pt, expanded lower corners using the panel-bottom token, collapsed lower corners 15pt. Anticipation adds 26pt to the measured notch width and 11pt to its height. Row, search, and symbol-tile radii are distinct small curves; filters share a 10pt rounded segmented container with 7pt selected segments. The count is unboxed. The settings app icon sits in a 54pt square with the settings-icon radius. Selected rows and focused search use a fine 0.7pt blue edge; idle search uses a faint white edge. Native settings controls retain platform geometry.
 
 ## Components
 
 ### Buttons
 
-Plain, compact symbol controls in the picker; native buttons in settings. The visible `doc.on.doc` copy control appears in every row at 13pt. Settings uses a 15pt gear in a 28pt square. Pin visibility strengthens on hover or selection; pinned state remains visible. Tooltips and accessibility labels identify icon actions. No custom focus-ring token is defined; focus uses native behavior.
+Plain, compact symbol controls in the picker; native buttons in settings. The visible `doc.on.doc` copy control appears in every row at 12pt. Settings uses a 14pt gear in a 30pt square. Icon actions have an 8pt hover surface and a short press response that respects Reduce Motion. Pin visibility strengthens on hover or selection; pinned state remains visible. Tooltips and accessibility labels identify icon actions. No custom focus-ring token is defined; focus uses native behavior.
 
 ### Chips
 
-All, Links, and Pinned are capsule filters with medium labels. Selected state uses the selected-filter token; inactive labels use Secondary White. Pinned includes the native pin symbol. The count badge uses rounded 12pt medium type, 7pt horizontal and 3pt vertical padding, with a white 9% tonal layer.
+All, Links, and Pinned share a compact segmented container with 11.5pt medium labels. Selected state uses the selected-filter token; inactive labels use Secondary White. The item count uses unboxed rounded 11pt medium type. Keyboard guidance uses small 17pt-high keycaps with 9pt labels and 10.5pt descriptions.
 
 ### Cards / Containers
 
@@ -198,3 +198,7 @@ Opening uses a single continuous spring (response 0.28s, damping fraction 0.92) 
 - **Don't** treat illustrative renders or browser component previews as an approved native comp.
 
 Preview uses the existing list region, keeping the list mounted underneath to preserve position. A compact title row contains the selected item name, the contextual Copy/Paste action, and a close button. A 12pt rounded tonal surface contains a read-only native NSTextView with 13pt SF text and 12pt insets. The footer exposes Space preview / Space close preview in the same position. Preview does not introduce another window, remote content, or a new visual identity.
+
+## Premium refinement — November 2026
+
+The `feat/premium-ui` pass preserves the black notch silhouette and interaction timings. The header pairs a 34pt symbol tile with a 19pt PasteReady title and secondary history label. Muted navy selection, a fine blue edge, aligned row actions, grouped filters, and reusable keycaps provide hierarchy without extra elevation. Rows retain the 52pt height and 55pt navigation stride. Settings groups its three preferences and aligns switches on the trailing edge. Native renders in `.impeccable/review/premium/` cover populated, preview, empty, search, shortcut, no-notch, and settings states.

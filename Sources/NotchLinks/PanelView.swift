@@ -131,53 +131,17 @@ struct PanelView: View {
     }
 
     private var content: some View {
-        VStack(spacing: 14) {
-            HStack(alignment: .center) {
-                Image(systemName: "link").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white.opacity(0.8))
-                Text("Clipboard").font(.system(size: 20, weight: .semibold))
-                Text("\(store.links.count)").font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.65)).padding(.horizontal, 7).padding(.vertical, 3)
-                    .background(.white.opacity(0.09), in: Capsule())
-                Spacer()
-                if store.paused {
-                    Image(systemName: "pause.circle.fill").foregroundStyle(.orange).help("Clipboard capture paused")
-                }
-                Button { state.settings?() } label: {
-                    Image(systemName: "gearshape").font(.system(size: 15)).frame(width: 28, height: 28)
-                }.buttonStyle(.plain).foregroundStyle(.white.opacity(0.65)).help("Settings")
-                .accessibilityLabel("Open settings")
-            }
-            HStack(spacing: 9) {
-                Image(systemName: "magnifyingglass").foregroundStyle(.white.opacity(0.55))
-                TextField("Search your clipboard", text: $state.query)
-                    .textFieldStyle(.plain).font(.system(size: 14)).focused($searchFocused)
-                    .onSubmit { chooseSelected() }
-                    .accessibilityLabel("Search clipboard")
-                if !state.query.isEmpty {
-                    Button { state.query = "" } label: { Image(systemName: "xmark.circle.fill") }
-                        .buttonStyle(.plain).foregroundStyle(.white.opacity(0.55)).accessibilityLabel("Clear search")
-                }
-            }
-            .padding(.horizontal, 12).frame(height: 39)
-            .background(.white.opacity(0.085), in: RoundedRectangle(cornerRadius: 11))
-            HStack(spacing: 5) {
-                filterButton("All", favorites: false)
-                Button { state.favoritesOnly = false; state.linksOnly.toggle() } label: {
-                    Text("Links").font(.system(size: 12, weight: .medium)).padding(.horizontal, 10).padding(.vertical, 6)
-                        .foregroundStyle(.white.opacity(state.linksOnly ? 1 : 0.6))
-                        .background(.white.opacity(state.linksOnly ? 0.13 : 0), in: Capsule())
-                }.buttonStyle(.plain)
-                filterButton("Pinned", favorites: true)
-                Spacer()
-                Text("ON THIS MAC").font(.system(size: 9, weight: .medium)).tracking(1)
-                    .foregroundStyle(.white.opacity(0.5))
-            }
+        VStack(spacing: 0) {
+            header.padding(.bottom, 16)
+            searchField.padding(.bottom, 12)
+            filterBar.padding(.bottom, 12)
             if let error = store.storageError {
-                Label(error, systemImage: "exclamationmark.triangle").font(.system(size: 11)).foregroundStyle(.orange)
+                Label(error, systemImage: "exclamationmark.triangle").font(.system(size: 11))
+                    .foregroundStyle(.orange).padding(.bottom, 10)
             } else if store.clipboardDenied {
                 Button("Allow clipboard access in System Settings") {
                     NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Pasteboard")!)
-                }.font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.orange)
+                }.font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.orange).padding(.bottom, 10)
             }
             ZStack {
                 if items.isEmpty { emptyState }
@@ -193,74 +157,128 @@ struct PanelView: View {
                     .accessibilityHidden(previewItem != nil)
                 }
                 if let link = previewItem { fullPreview(link) }
-            }.frame(maxHeight: .infinity)
-            HStack(spacing: 5) {
-                if let message = state.message {
-                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                    Text(message)
-                } else {
-                    Image(systemName: "arrow.up.arrow.down").font(.system(size: 10))
-                    Text("navigate")
-                    Text("·").padding(.horizontal, 3)
-                    Image(systemName: "return").font(.system(size: 10))
-                    Text(state.pastesSelection ? "paste" : "copy")
-                }
-                Spacer()
-                Button { state.togglePreview(links: store.sorted) } label: {
-                    Text(state.previewID == nil ? "Space preview" : "Space close preview")
-                }.buttonStyle(.plain).disabled(items.isEmpty)
-                    .help(state.previewID == nil ? "Show full preview" : "Close full preview")
-                    .accessibilityLabel(state.previewID == nil ? "Show full preview" : "Close full preview")
-                Text("·").padding(.horizontal, 3)
-                Text("esc to close")
-            }.font(.system(size: 11)).foregroundStyle(.white.opacity(0.55))
+            }.frame(maxHeight: .infinity).padding(.bottom, 12)
+            footer
         }
-        .padding(.horizontal, 22).padding(.bottom, 19)
+        .padding(.horizontal, 22).padding(.bottom, 18)
         .frame(width: 480, height: 448)
+    }
+    private var header: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "doc.on.clipboard").font(.system(size: 16, weight: .medium))
+                .foregroundStyle(.white.opacity(0.85)).frame(width: 34, height: 34)
+                .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
+            VStack(alignment: .leading, spacing: 3) {
+                Text("PasteReady").font(.system(size: 19, weight: .semibold)).tracking(-0.35)
+                Text("Clipboard history").font(.system(size: 10.5)).foregroundStyle(PanelPalette.secondary)
+            }
+            Spacer()
+            Text("\(store.links.count) \(store.links.count == 1 ? "item" : "items")")
+                .font(.system(size: 11, weight: .medium, design: .rounded)).foregroundStyle(PanelPalette.secondary)
+                .padding(.trailing, 5)
+            if store.paused {
+                Image(systemName: "pause.circle.fill").foregroundStyle(.orange).help("Clipboard capture paused")
+            }
+            Button { state.settings?() } label: {
+                Image(systemName: "gearshape").font(.system(size: 14)).frame(width: 30, height: 30)
+            }.buttonStyle(PanelIconButtonStyle()).foregroundStyle(PanelPalette.secondary).help("Settings")
+                .accessibilityLabel("Open settings")
+        }
+    }
+    private var searchField: some View {
+        HStack(spacing: 9) {
+            Image(systemName: "magnifyingglass").font(.system(size: 13, weight: .medium))
+                .foregroundStyle(searchFocused ? PanelPalette.accent : PanelPalette.secondary)
+            TextField("Search your clipboard", text: $state.query)
+                .textFieldStyle(.plain).font(.system(size: 13)).focused($searchFocused)
+                .onSubmit { chooseSelected() }.accessibilityLabel("Search clipboard")
+            if !state.query.isEmpty {
+                Button { state.query = "" } label: {
+                    Image(systemName: "xmark.circle.fill").frame(width: 24, height: 24)
+                }.buttonStyle(PanelIconButtonStyle()).foregroundStyle(PanelPalette.secondary).accessibilityLabel("Clear search")
+            } else if !searchFocused { PanelKeycap(key: "⌘⇧V") }
+        }
+        .padding(.horizontal, 12).frame(height: 40)
+        .background(PanelPalette.field, in: RoundedRectangle(cornerRadius: 11))
+        .overlay {
+            RoundedRectangle(cornerRadius: 11).strokeBorder(searchFocused ? PanelPalette.selectionEdge : .white.opacity(0.075), lineWidth: 0.7)
+        }
+    }
+    private var filterBar: some View {
+        HStack(spacing: 5) {
+            HStack(spacing: 2) {
+                filterButton("All", favorites: false)
+                Button { state.favoritesOnly = false; state.linksOnly.toggle() } label: {
+                    filterLabel("Links", selected: state.linksOnly)
+                }.buttonStyle(.plain).accessibilityAddTraits(state.linksOnly ? .isSelected : [])
+                filterButton("Pinned", favorites: true)
+            }.padding(3).background(.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 10))
+            Spacer()
+            Image(systemName: "internaldrive").font(.system(size: 10))
+            Text("On this Mac").font(.system(size: 10.5))
+        }.foregroundStyle(PanelPalette.hint)
+    }
+    private var footer: some View {
+        HStack(spacing: 10) {
+            if let message = state.message {
+                Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                Text(message).font(.system(size: 10.5)).foregroundStyle(PanelPalette.secondary)
+            } else {
+                PanelShortcut(key: "arrow.up.arrow.down", title: "Navigate", symbol: true)
+                PanelShortcut(key: "return", title: state.pastesSelection ? "Paste" : "Copy", symbol: true)
+            }
+            Spacer(minLength: 4)
+            Button { state.togglePreview(links: store.sorted) } label: {
+                PanelShortcut(key: "Space", title: state.previewID == nil ? "Preview" : "Close preview")
+            }.buttonStyle(.plain).disabled(items.isEmpty)
+                .help(state.previewID == nil ? "Show full preview" : "Close full preview")
+                .accessibilityLabel(state.previewID == nil ? "Show full preview" : "Close full preview")
+            PanelShortcut(key: "esc", title: state.previewID == nil ? "Close" : "Back")
+        }
     }
     private func fullPreview(_ link: ClipboardEntry) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                Image(systemName: link.symbol).foregroundStyle(.white.opacity(0.7))
+                Image(systemName: link.symbol).foregroundStyle(PanelPalette.accent)
                 Text(link.title).font(.system(size: 13, weight: .medium)).lineLimit(2)
                 Spacer(minLength: 5)
                 Button(state.pastesSelection ? "Paste" : "Copy") { state.choose?(link) }
                     .buttonStyle(.plain).font(.system(size: 12, weight: .medium))
-                    .padding(.horizontal, 10).padding(.vertical, 6)
-                    .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+                    .padding(.horizontal, 11).padding(.vertical, 6)
+                    .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
                 Button { state.closePreview() } label: {
-                    Image(systemName: "xmark").font(.system(size: 11, weight: .semibold)).frame(width: 26, height: 28)
-                }.buttonStyle(.plain).foregroundStyle(.white.opacity(0.65)).accessibilityLabel("Close full preview")
+                    Image(systemName: "xmark").font(.system(size: 11, weight: .semibold)).frame(width: 28, height: 28)
+                }.buttonStyle(PanelIconButtonStyle()).foregroundStyle(PanelPalette.secondary).accessibilityLabel("Close full preview")
             }
             ClipboardPreviewText(id: link.id, text: link.content)
-                .background(.white.opacity(0.055), in: RoundedRectangle(cornerRadius: 12))
+                .background(.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 12))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.black)
+        .frame(maxWidth: .infinity, maxHeight: .infinity).background(.black)
     }
     private func filterButton(_ name: String, favorites: Bool) -> some View {
         Button { state.favoritesOnly = favorites; state.linksOnly = false } label: {
-            HStack(spacing: 5) {
-                if favorites { Image(systemName: "pin.fill").font(.system(size: 10)) }
-                Text(name).font(.system(size: 12, weight: .medium))
-            }.padding(.horizontal, 10).padding(.vertical, 6)
-                .foregroundStyle(.white.opacity(state.favoritesOnly == favorites && !state.linksOnly ? 1 : 0.6))
-                .background(.white.opacity(state.favoritesOnly == favorites && !state.linksOnly ? 0.13 : 0), in: Capsule())
+            filterLabel(name, selected: state.favoritesOnly == favorites && !state.linksOnly)
         }.buttonStyle(.plain).accessibilityAddTraits(state.favoritesOnly == favorites && !state.linksOnly ? .isSelected : [])
+    }
+    private func filterLabel(_ title: String, selected: Bool) -> some View {
+        Text(title).font(.system(size: 11.5, weight: .medium))
+            .foregroundStyle(selected ? .white : PanelPalette.secondary)
+            .padding(.horizontal, 13).frame(height: 25)
+            .background(.white.opacity(selected ? 0.11 : 0), in: RoundedRectangle(cornerRadius: 7))
     }
     private func row(_ link: ClipboardEntry) -> some View {
         let selected = state.selectedID == link.id
         return HStack(spacing: 10) {
             Button { state.choose?(link) } label: {
                 HStack(spacing: 11) {
-                    Image(systemName: link.symbol).font(.system(size: 17, weight: .medium))
-                        .foregroundStyle(selected ? .white : .white.opacity(0.75))
-                        .frame(width: 36, height: 36)
-                        .background(.white.opacity(selected ? 0.13 : 0.065), in: RoundedRectangle(cornerRadius: 10))
+                    Image(systemName: link.symbol).font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(selected ? PanelPalette.accent : .white.opacity(0.72))
+                        .frame(width: 32, height: 32)
+                        .background(selected ? PanelPalette.accent.opacity(0.09) : .white.opacity(0.045), in: RoundedRectangle(cornerRadius: 9))
                     VStack(alignment: .leading, spacing: 4) {
                         Text(link.title).font(.system(size: 13, weight: .medium)).lineLimit(1)
-                        Text(link.preview).font(.system(size: 11)).foregroundStyle(.white.opacity(selected ? 0.8 : 0.58))
+                        Text(link.preview).font(.system(size: 10.5)).foregroundStyle(.white.opacity(selected ? 0.72 : 0.58))
                             .lineLimit(1).truncationMode(.middle)
                     }
                     Spacer(minLength: 0)
@@ -270,20 +288,24 @@ struct PanelView: View {
                 if state.pastesSelection { state.choose?(link) }
                 else { store.copy(link); state.message = "Copied to clipboard" }
             } label: {
-                Image(systemName: state.pastesSelection ? "arrow.turn.down.left" : "doc.on.doc").font(.system(size: 13)).frame(width: 28, height: 32)
-                    .foregroundStyle(.white.opacity(0.8))
-            }.buttonStyle(.plain).help(state.pastesSelection ? "Paste item" : "Copy item")
+                Image(systemName: state.pastesSelection ? "arrow.turn.down.left" : "doc.on.doc")
+                    .font(.system(size: 12)).frame(width: 28, height: 30).foregroundStyle(.white.opacity(0.76))
+            }.buttonStyle(PanelIconButtonStyle()).help(state.pastesSelection ? "Paste item" : "Copy item")
                 .accessibilityLabel("\(state.pastesSelection ? "Paste" : "Copy") \(link.title)")
             Button { store.togglePin(link) } label: {
-                Image(systemName: link.pinned ? "pin.fill" : "pin")
-                    .font(.system(size: 12)).frame(width: 26, height: 32)
-                    .foregroundStyle(link.pinned ? .white.opacity(0.85) : .white.opacity(hoveredID == link.id || selected ? 0.6 : 0))
-            }.buttonStyle(.plain).help(link.pinned ? "Unpin link" : "Pin link")
+                Image(systemName: link.pinned ? "pin.fill" : "pin").font(.system(size: 11))
+                    .frame(width: 26, height: 30)
+                    .foregroundStyle(.white.opacity(link.pinned ? 0.72 : hoveredID == link.id || selected ? 0.55 : 0))
+            }.buttonStyle(PanelIconButtonStyle()).help(link.pinned ? "Unpin link" : "Pin link")
                 .accessibilityLabel(link.pinned ? "Unpin \(link.title)" : "Pin \(link.title)")
         }
-        .padding(.horizontal, 9).padding(.vertical, 8)
-        .background(selected ? Color(red: 0.12, green: 0.32, blue: 0.66) : .white.opacity(hoveredID == link.id ? 0.07 : 0),
+        .padding(.horizontal, 9).padding(.vertical, 10)
+        .background(selected ? PanelPalette.selection : .white.opacity(hoveredID == link.id ? 0.045 : 0),
             in: RoundedRectangle(cornerRadius: 12))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12).strokeBorder(selected ? PanelPalette.selectionEdge : .clear, lineWidth: 0.7)
+                .allowsHitTesting(false)
+        }
         .onHover { over in hoveredID = over ? link.id : nil }
         .contextMenu {
             Button("Copy item") { store.copy(link); state.message = "Copied to clipboard" }
