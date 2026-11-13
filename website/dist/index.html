@@ -30,12 +30,21 @@
 <main id="main">
   <section class="hero" aria-labelledby="hero-title">
     <h1 id="hero-title">Copy once. Keep it close.</h1>
-    <p class="intro">Clipboard history for your Mac.<br> Your links and words, ready to use again.</p>
+    <p class="intro">PasteReady remembers the text and links you copy. Move your pointer to the top-center of your Mac’s screen to find them and copy them again.</p>
     <div class="install" id="install">
       <button class="copy-command" type="button" aria-label="Copy install command" aria-describedby="copy-status">
         <svg aria-hidden="true"><use href="assets/icons.svg#i-copy"/></svg><span>Copy install command</span>
       </button>
       <p class="install-meta">macOS 14+ · Apple Silicon &amp; Intel</p>
+      <div class="install-help" aria-labelledby="install-steps-title">
+        <h2 id="install-steps-title">Install in three simple steps</h2>
+        <ol>
+          <li><strong>Copy the command.</strong><p>Click “Copy install command” above. You’ll paste it in the last step.</p></li>
+          <li><strong>Open Terminal, a built-in Mac app.</strong><p>Hold Command (⌘) and press Space. Type <b>Terminal</b>, then press Return (Enter).</p></li>
+          <li><strong>Paste it and press Return.</strong><p>In Terminal, hold Command (⌘) and press V. Press Return (Enter) to start the installation.</p></li>
+        </ol>
+        <p class="install-result">PasteReady will open when it’s ready. Allow clipboard access if your Mac asks.</p>
+      </div>
       <details class="command-details">
         <summary>View the Terminal command <svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary>
         <div class="command-source">
@@ -55,11 +64,11 @@
     </div>
     <div id="view-notch" class="product-view" role="tabpanel" aria-labelledby="tab-notch" tabindex="0">
       <img src="assets/product.png" width="1080" height="1140" alt="PasteReady clipboard showing pinned profile links, recent text, search, and a copy button beside each item. Sample content.">
-      <p>Hover at the notch. Find something you copied.<br> Click to use it again.</p>
+      <p>Copy text or a link as usual. Hover at the notch and use an item’s copy icon. Return to your form and press Command (⌘) + V to paste it.</p>
     </div>
     <div id="view-paste" class="product-view" role="tabpanel" aria-labelledby="tab-paste" tabindex="0" hidden>
       <img src="assets/shortcut.png" width="1080" height="1140" alt="PasteReady’s floating keyboard picker, with a paste action beside each recent clipboard item. Sample content." loading="lazy">
-      <p>Press <kbd>⌘⇧V</kbd>, choose an item, and press Return.<br> It pastes back at your cursor with Accessibility access enabled.</p>
+      <p>Click where you want to paste. Press Command (⌘) + Shift + V, choose an item, and press Return. Enable Direct paste in PasteReady’s Settings the first time.</p>
     </div>
     <div id="view-preview" class="product-view" role="tabpanel" aria-labelledby="tab-preview" tabindex="0" hidden>
       <img src="assets/preview.png" width="1080" height="1140" alt="PasteReady showing the full selectable text of a sample introduction." loading="lazy">
@@ -82,7 +91,7 @@
 
   <section class="questions" aria-labelledby="questions-title">
     <h2 id="questions-title">Before you start.</h2>
-    <details><summary>How do I get started?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p>Copy the install command above, open Terminal, paste it, and press Return. The installer puts PasteReady in <code>~/Applications</code> and opens it. You can also <a href="https://github.com/sartha555k/PasteReady/releases/latest/download/PasteReady.zip">download the ZIP</a>.</p></details>
+    <details><summary>How do I get started?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p><a href="#install">Follow the three installation steps above.</a> Once PasteReady opens, copy some text or a link with Command (⌘) + C. Hover at the notch to find it again. The app lives in your menu bar. You can also <a href="https://github.com/sartha555k/PasteReady/releases/latest/download/PasteReady.zip">download the ZIP</a> instead of using Terminal.</p></details>
     <details><summary>What permissions does it need?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p>Allow clipboard access if macOS asks. Copying from the notch needs no Accessibility permission. For direct paste with ⌘⇧V, enable Settings → Direct paste → Enable, then allow PasteReady in System Settings → Accessibility. Input Monitoring is not required.</p></details>
     <details><summary>What is saved?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p>Text and links copied while the app is running: 20 recent unpinned items, plus your pins. Images, files, rich formatting, and individual text items over 100 KB aren’t captured. History is local JSON and is not encrypted. Clipboard items marked concealed or transient are skipped; ordinary text is captured, so pause when needed. <a href="https://github.com/sartha555k/PasteReady/blob/main/docs/usage.md">Read the usage and privacy guide.</a></p></details>
     <details><summary>How do updates work?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p>Run the same command again to get the latest published release. Your history and pins stay saved. There is no automatic updater. Current releases use ad-hoc signing; Apple notarization is not configured. You can <a href="https://github.com/sartha555k/PasteReady/blob/main/distribution/install.sh">read the installer</a> before running it.</p></details>

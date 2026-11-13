@@ -123,7 +123,7 @@ Bodoni Moda's fine contrast gives the introduction its editorial voice. Hanken G
 ### Hierarchy
 - **Display:** the centered introduction; balanced wrapping, desktop clamp in frontmatter.
 - **Headline:** section headings, using the same serif at a smaller scale.
-- **Intro:** muted supporting text, limited to 44 characters in width.
+- **Intro:** muted supporting text, limited to 54 characters in width.
 - **Body:** feature descriptions; FAQ copy uses a slightly roomier line-height (1.7).
 - **Title:** feature terms with medium weight.
 - **Label:** primary action; navigation is similarly compact, with gallery labels at 13px and metadata at 12px.
@@ -180,3 +180,7 @@ All interactive elements use a 2px focus outline with 5px offset. Reduced-motion
 - **Don't** replace real app captures with generated interface imagery.
 - **Don't** apply this website's serif and pale field to the separately documented native app.
 - **Don't** imply that development-build screenshots prove a newer published release.
+
+## Installation guidance
+
+The hero explains the product through a concrete action: moving to the top-center screen edge to reuse previous copies. A visible three-step ordered list stays directly below the copy action, rather than inside a disclosure. It explains copying the command, opening the built-in Terminal app with Command + Space, and pasting with Command + V before pressing Return. A final sentence explains that PasteReady opens and may request clipboard access. The guide is left-aligned within a 440px maximum width, uses 14px/1.55 supporting text and a 15px medium Hanken Grotesk heading, and stacks naturally on mobile. The command itself remains inspectable in its disclosure. Copy success points to the next keyboard action.

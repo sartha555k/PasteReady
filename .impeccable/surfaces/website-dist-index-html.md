@@ -32,3 +32,7 @@ The user rejected the previous website and supplied `.impeccable/review/website-
 Scope: distill the existing showcase, preserve actual product behavior/content, and apply the reference's restraint. Remove the oversized split hero, fake notch demo, icon strip, duplicate product image, repeated install/closing sections, and gray picture frames. Keep one serif introduction, one install action with an inspectable command, one native screenshot gallery, a short feature index, and setup/privacy details on demand.
 
 Type: self-hosted Bodoni Moda for headings, Hanken Grotesk for supporting UI. Ground #fbfcf9, ink #242e26, faint dots limited to the introduction. The user's image is style reference, not a literal website comp. Verify at desktop/mobile and user's in-app width. New screenshots belong in `.impeccable/review/reference-pass/`; earlier captures are obsolete.
+
+## Installation clarity
+
+Preserve the approved restrained visual style. The audience includes people who have never used Terminal. Show the three installation steps under the copy button: copy the command, open Terminal using Command + Space, paste with Command + V and press Return. Explain that the app opens and clipboard permission may be requested. Product copy describes reusing earlier copied text and links from the top-center screen edge.

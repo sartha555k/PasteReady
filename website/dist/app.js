@@ -10,7 +10,7 @@ copyButton.addEventListener('click', async () => {
     await navigator.clipboard.writeText(command.textContent.trim());
     copyButton.querySelector('span').textContent = 'Copied';
     copyButton.querySelector('use').setAttribute('href', 'assets/icons.svg#i-check');
-    copyStatus.textContent = 'Copied. Open Terminal, paste, and press Return.';
+    copyStatus.textContent = 'Copied. Next: hold Command (⌘) and press Space, type Terminal, then press Return.';
     resetCopy = setTimeout(() => {
       copyButton.querySelector('span').textContent = 'Copy install command';
       copyButton.querySelector('use').setAttribute('href', 'assets/icons.svg#i-copy');

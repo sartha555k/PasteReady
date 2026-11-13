@@ -240,7 +240,7 @@
   ],
   "narrative": {
     "northStar": "Quiet product field",
-    "overview": "A pale field, centered serif introduction, and generous whitespace frame the native app. Supporting text and controls stay compact and plain. The faint dotted introduction provides texture without competing with the app captures.",
+    "overview": "A pale field, centered serif introduction, and generous whitespace frame the native app. Supporting text and controls stay compact and plain. The faint dotted introduction provides texture without competing with the app captures. A visible three-step installation guide below the copy action explains Command + Space to find Terminal, Command + V to paste, Return to install, and the expected app launch and clipboard permission prompt.",
     "keyCharacteristics": [
       "Light, subtly green paper with dark green-black text.",
       "High-contrast serif headings paired with quiet grotesk body text.",

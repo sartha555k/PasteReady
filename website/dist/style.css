@@ -173,3 +173,19 @@ footer nav a:hover { text-decoration: underline; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Keep the installation path visible for people who have never used Terminal. */
+.intro { max-width: 54ch; }
+.install-help { max-width: 440px; margin: 28px auto 14px; text-align: left; }
+.install-help h2 { font: 500 15px/1.4 'Hanken Grotesk', sans-serif; letter-spacing: 0; margin: 0 0 18px; }
+.install-help ol { margin: 0; padding-left: 21px; }
+.install-help li { padding-left: 7px; margin: 0 0 17px; font-size: 14px; line-height: 1.55; }
+.install-help li::marker { color: var(--muted); font-weight: 500; }
+.install-help strong { font-weight: 500; }
+.install-help li p { color: var(--muted); margin: 4px 0 0; }
+.install-help b { color: var(--ink); font-weight: 500; }
+.install-result { color: var(--muted); font-size: 13px; line-height: 1.6; margin: 20px 0 0; }
+@media(max-width:680px) {
+  .install-help { margin-top: 26px; }
+  .install-help li { margin-bottom: 18px; }
+}
