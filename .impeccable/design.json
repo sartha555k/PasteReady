@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-12T18:12:13.449426+00:00",
+  "title": "Design System: PasteReady",
+  "extensions": {
+    "colorMeta": {
+      "selection-blue": {
+        "role": "primary",
+        "displayName": "Selection Blue",
+        "tonalRamp": [
+          "oklch(15% .04 260)",
+          "oklch(26% .07 260)",
+          "oklch(37% .11 260)",
+          "oklch(48% .15 260)",
+          "oklch(60% .15 260)",
+          "oklch(72% .11 260)",
+          "oklch(84% .06 260)",
+          "oklch(95% .015 260)"
+        ]
+      },
+      "notch-black": {
+        "role": "neutral",
+        "displayName": "Notch Black",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "primary-white": {
+        "role": "neutral",
+        "displayName": "Primary White",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "secondary-white": {
+        "role": "neutral",
+        "displayName": "Secondary White",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "hint-white": {
+        "role": "neutral",
+        "displayName": "Hint White",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "field-layer": {
+        "role": "neutral",
+        "displayName": "Field Layer",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "selected-chip-layer": {
+        "role": "neutral",
+        "displayName": "Selected Chip Layer",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "hover-layer": {
+        "role": "neutral",
+        "displayName": "Hover Layer",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      }
+    },
+    "shadows": [
+      {
+        "name": "expanded-notch",
+        "value": "SwiftUI black.opacity(0.32), radius: 24pt, x: 0pt, y: 14pt",
+        "purpose": "Single structural shadow under the expanded silhouette."
+      }
+    ],
+    "motion": [
+      {
+        "name": "anticipation",
+        "value": "single spring(response: 0.28, dampingFraction: 0.92)",
+        "purpose": "Small notch expansion before opening."
+      },
+      {
+        "name": "expansion",
+        "value": "no anticipation delay; single spring(response: 0.28, dampingFraction: 0.92)",
+        "purpose": "Open the full panel."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "NSPanel alpha 0\u21941 in 0.12s; expanded geometry remains fixed",
+        "purpose": "Respect Reduce Motion without geometry animation."
+      },
+      {
+        "name": "close",
+        "value": "easeOut(duration: 0.18)",
+        "purpose": "Standard closing silhouette transition."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Copy action",
+      "kind": "button",
+      "refersTo": "copy-button",
+      "description": "Illustrative web preview of the persistent native copy icon; SVG is a preview surrogate for SF Symbols.",
+      "html": "<button class=\"ds-copy\" aria-label=\"Copy item\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"12\" height=\"13\" rx=\"2\"/><path d=\"M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3\"/></svg></button>",
+      "css": ".ds-copy{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:inline-flex;align-items:center;justify-content:center;width:28pt;height:32pt;background:transparent;color:rgba(255,255,255,.8);border:0;cursor:pointer}.ds-copy:hover{color:white}.ds-copy:focus-visible{outline:2px solid white;outline-offset:2px}.ds-copy:active{opacity:.7}"
+    },
+    {
+      "name": "Search field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Illustrative preview; native focus and TextField behavior remain platform-owned.",
+      "html": "<input class=\"ds-search\" aria-label=\"Search clipboard\" placeholder=\"Search your clipboard\"/>",
+      "css": ".ds-search{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:rgba(255,255,255,.085);color:white;height:39pt;padding:0 12pt;border:0;border-radius:11pt;font-size:14pt}.ds-search:hover{background:rgba(255,255,255,.1)}.ds-search:focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:2px} .ds-search::placeholder{color:rgba(255,255,255,.55)}"
+    },
+    {
+      "name": "Clipboard filters",
+      "kind": "nav",
+      "description": "All, Links, Pinned filter strip; browser focus treatment is illustrative.",
+      "html": "<nav class=\"ds-filters\" aria-label=\"Clipboard filters\"><button aria-pressed=\"true\">All</button><button aria-pressed=\"false\">Links</button><button aria-pressed=\"false\">Pinned</button></nav>",
+      "css": ".ds-filters{display:flex;gap:5pt;background:black;padding:8pt}.ds-filters button{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:12pt;font-weight:500;border:0;border-radius:999pt;padding:6pt 10pt;color:rgba(255,255,255,.6);background:transparent;cursor:pointer}.ds-filters button[aria-pressed=true]{background:rgba(255,255,255,.13);color:white}.ds-filters button:hover{color:white}.ds-filters button:focus-visible{outline:2px solid white;outline-offset:2px}.ds-filters button:active{opacity:.7}"
+    },
+    {
+      "name": "Selected filter",
+      "kind": "chip",
+      "refersTo": "selected-filter",
+      "description": "Selected tonal capsule preview.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"true\">Pinned</button>",
+      "css": ".ds-chip{font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:white;background:rgba(255,255,255,.13);border:0;border-radius:999pt;padding:6pt 10pt;font-size:12pt;font-weight:500;cursor:pointer}.ds-chip:hover{background:rgba(255,255,255,.16)}.ds-chip:focus-visible{outline:2px solid white;outline-offset:2px}.ds-chip:active{opacity:.7}"
+    },
+    {
+      "name": "Selected history row",
+      "kind": "card",
+      "refersTo": "selected-row",
+      "description": "Illustrative row preview with persistent copy affordance; native row actions are separate controls.",
+      "html": "<div class=\"ds-row\"><div><strong>Profile link</strong><small>https://example.com/profile</small></div><button aria-label=\"Copy Profile link\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"12\" height=\"13\" rx=\"2\"/><path d=\"M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3\"/></svg></button></div>",
+      "css": ".ds-row{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:10pt;background:rgb(12% 32% 66%);color:white;border-radius:12pt;padding:8pt 9pt}.ds-row strong{display:block;font-size:13pt;font-weight:500}.ds-row small{display:block;margin-top:4pt;font-size:11pt;color:rgba(255,255,255,.8)}.ds-row button{display:flex;align-items:center;justify-content:center;width:28pt;height:32pt;border:0;background:transparent;color:rgba(255,255,255,.8);cursor:pointer}.ds-row button:hover{color:white}.ds-row button:focus-visible{outline:2px solid white;outline-offset:2px}.ds-row button:active{opacity:.7}"
+    },
+    {
+      "name": "Notch silhouette",
+      "kind": "custom",
+      "refersTo": "notch-panel",
+      "description": "Illustrative cropped container preview; source layout uses measured notch height and native point geometry.",
+      "html": "<div class=\"ds-notch\">Clipboard</div>",
+      "css": ".ds-notch{font-family:-apple-system,BlinkMacSystemFont,sans-serif;width:280pt;max-width:100%;padding:40pt 22pt 19pt;background:black;color:white;font-size:20pt;font-weight:600;border-radius:9pt 9pt 28pt 28pt;box-shadow:0 14pt 24pt rgba(0,0,0,.32)}"
+    }
+  ],
+  "narrative": {
+    "overview": "Native Apple-level restraint: a black surface that feels continuous with the camera housing, compact SF text, and SF Symbols. Smooth, slightly bubbly anticipation supplies personality without decorative imagery. The user supplied this language; no additional named creative metaphor has been approved.\n\nThe picker uses tonal layers for structure and a blue row for selection. Settings use standard SwiftUI controls and semantic system materials. This is a code-led implementation, with no approved visual comp; native renders are illustrative review evidence. Finish review cleared the motion finding and accepted shipment at the captured and source-reviewed scope.",
+    "keyCharacteristics": [
+      "Black notch silhouette with softly rounded lower corners.",
+      "Native system typography and SF Symbols.",
+      "Visible copy action on every history row.",
+      "Brief elastic anticipation; alpha fade with Reduce Motion."
+    ],
+    "rules": [
+      {
+        "name": "The Selection Rule",
+        "body": "Blue identifies the selected history row; filters use tonal white capsules.",
+        "section": "colors"
+      },
+      {
+        "name": "The Single Shadow Rule",
+        "body": "The expanded notch silhouette owns the custom shadow; its internal controls stay flat.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use native system fonts, SF Symbols, and platform settings controls.",
+      "Do preserve a visible copy icon on every row, including unselected rows.",
+      "Do show selected history rows in the extracted blue and hover through a quiet tonal layer.",
+      "Do preserve all captured text and links as local history and keep hover selection copy-only; shortcut selection pastes into the captured app.",
+      "Do use the alpha-only opening and closing path when Reduce Motion is enabled."
+    ],
+    "donts": [
+      "Don't paste after hover-only selection, cancellation, or a changed destination.",
+      "Don't replace the black notch surface with remote imagery or fetched favicons.",
+      "Don't invent fixed colors for native semantic settings materials.",
+      "Don't treat illustrative renders or browser component previews as an approved native comp."
+    ]
+  }
+}

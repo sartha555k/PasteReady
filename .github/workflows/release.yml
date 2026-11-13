@@ -1,0 +1,61 @@
+name: Release PasteReady
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pasteready-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Validate release version
+        shell: bash
+        run: |
+          version=$(/usr/bin/plutil -extract CFBundleShortVersionString raw -o - scripts/Info.plist)
+          tag="v$version"
+          if [[ "$GITHUB_REF_TYPE" == tag && "$GITHUB_REF_NAME" != "$tag" ]]; then
+            echo "Tag $GITHUB_REF_NAME does not match app version $tag" >&2
+            exit 1
+          fi
+          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
+
+      - name: Build universal app
+        run: ./scripts/build.sh
+
+      - name: Check pointer entry behavior
+        run: ./scripts/test-hover.sh
+
+      - name: Check installer and update behavior
+        run: ./scripts/test-installer.sh
+
+      - name: Prepare release assets
+        run: ./scripts/prepare-release.sh "$GITHUB_REPOSITORY"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+            build/release/install.sh \
+            build/release/PasteReady.zip \
+            build/release/PasteReady.zip.sha256 \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "PasteReady $RELEASE_TAG" \
+            --notes-file build/release/RELEASE.md \
+            --latest

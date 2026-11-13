@@ -1,0 +1,198 @@
+---
+name: PasteReady
+description: Native clipboard history at the Mac notch.
+colors:
+  selection-blue: "rgb(12% 32% 66%)"
+  notch-black: "#000000"
+  primary-white: "#ffffff"
+  secondary-white: "rgb(100% 100% 100% / 60%)"
+  hint-white: "rgb(100% 100% 100% / 55%)"
+  field-layer: "rgb(100% 100% 100% / 8.5%)"
+  selected-chip-layer: "rgb(100% 100% 100% / 13%)"
+  hover-layer: "rgb(100% 100% 100% / 7%)"
+typography:
+  settings-headline:
+    fontFamily: "SF system"
+    fontSize: "23pt"
+    fontWeight: 600
+  panel-title:
+    fontFamily: "SF system"
+    fontSize: "20pt"
+    fontWeight: 600
+  empty-title:
+    fontFamily: "SF system"
+    fontSize: "16pt"
+    fontWeight: 500
+  search:
+    fontFamily: "SF system"
+    fontSize: "14pt"
+    fontWeight: 400
+  row-title:
+    fontFamily: "SF system"
+    fontSize: "13pt"
+    fontWeight: 500
+  body:
+    fontFamily: "SF system"
+    fontSize: "12pt"
+    fontWeight: 400
+  label:
+    fontFamily: "SF system"
+    fontSize: "12pt"
+    fontWeight: 500
+  hint:
+    fontFamily: "SF system"
+    fontSize: "11pt"
+    fontWeight: 400
+rounded:
+  row-icon: "10pt"
+  search: "11pt"
+  row: "12pt"
+  settings-icon: "16pt"
+  panel-bottom: "28pt"
+spacing:
+  text-gap: "4pt"
+  control-gap: "5pt"
+  row-inset-y: "8pt"
+  row-inset-x: "9pt"
+  row-gap: "10pt"
+  field-inset-x: "12pt"
+  content-gap: "14pt"
+  panel-inset-x: "22pt"
+  settings-inset: "28pt"
+components:
+  copy-button:
+    textColor: "rgb(100% 100% 100% / 80%)"
+    width: "28pt"
+    height: "32pt"
+  search-field:
+    backgroundColor: "{colors.field-layer}"
+    textColor: "{colors.primary-white}"
+    rounded: "{rounded.search}"
+    height: "39pt"
+    padding: "0pt 12pt"
+  selected-filter:
+    backgroundColor: "{colors.selected-chip-layer}"
+    textColor: "{colors.primary-white}"
+    padding: "6pt 10pt"
+  selected-row:
+    backgroundColor: "{colors.selection-blue}"
+    textColor: "{colors.primary-white}"
+    rounded: "{rounded.row}"
+    padding: "8pt 9pt"
+  hover-row:
+    backgroundColor: "{colors.hover-layer}"
+    rounded: "{rounded.row}"
+  notch-panel:
+    backgroundColor: "{colors.notch-black}"
+    width: "480pt"
+---
+
+# Design System: PasteReady
+
+## Overview
+
+Native Apple-level restraint: a black surface that feels continuous with the camera housing, compact SF text, and SF Symbols. Smooth, slightly bubbly anticipation supplies personality without decorative imagery. The user supplied this language; no additional named creative metaphor has been approved.
+
+The picker uses tonal layers for structure and a blue row for selection. Settings use standard SwiftUI controls and semantic system materials. This is a code-led implementation, with no approved visual comp; native renders are illustrative review evidence. Finish review cleared the motion finding and accepted shipment at the captured and source-reviewed scope.
+
+**Key Characteristics:**
+- Black notch silhouette with softly rounded lower corners.
+- Native system typography and SF Symbols.
+- Visible copy action on every history row.
+- Brief elastic anticipation; alpha fade with Reduce Motion.
+
+## Colors
+
+The picker combines pure black, translucent white structure, and a restrained blue selection accent. Frontmatter records source values; opacity is composited over the underlying surface.
+
+### Primary
+- **Selection Blue:** The active clipboard row, giving keyboard and pointer selection a stable location.
+
+### Neutral
+- **Notch Black:** The camera-connected panel silhouette.
+- **Primary White:** Main text and selected labels.
+- **Secondary White / Hint White:** Supporting text, filters, and keyboard guidance.
+- **Field Layer / Selected Chip Layer / Hover Layer:** Translucent white tonal separation, never independent opaque swatches.
+
+SwiftUI semantic orange communicates capture, storage, and shortcut issues; semantic green confirms copying. Sidecar tonal ramps are synthesized preview metadata, not additional shipping colors.
+
+Settings use `.secondary` and `.quaternary`, standard dividers, switches, and destructive button roles. These platform-resolved colors are not fixed palette tokens.
+
+**The Selection Rule.** Blue identifies the selected history row; filters use tonal white capsules.
+
+## Typography
+
+**Display Font:** Native SF system font, resolved by SwiftUI `.system`.
+**Body Font:** Native SF system font. The item-count badge uses the rounded system design; other text uses the default system design. No bundled fonts or web font dependencies.
+
+**Character:** Compact, familiar, and quiet. Semibold titles establish hierarchy while medium row titles and lighter secondary text support scanning.
+
+### Hierarchy
+- **Settings headline:** The large semibold introduction.
+- **Panel title:** The semibold clipboard heading.
+- **Empty title:** The medium-weight empty-state heading.
+- **Search:** Regular text in the plain search field.
+- **Row title:** Medium-weight single-line entry name.
+- **Body / Label:** Supporting copy and medium filter labels.
+- **Hint:** Row preview, permission messaging, and keyboard instructions.
+
+Line height is system-resolved, not a custom scale. The locality label is uppercase at 9pt, medium, with 1pt tracking. Row previews truncate in the middle; titles truncate to one line. Empty-state body copy is centered with 4pt line spacing.
+
+## Layout
+
+Measurements are native macOS points, not browser pixels. The borderless NSPanel host is 540pt × 570pt. The open black silhouette is 480pt wide and 468pt plus the measured notch height tall; its 448pt content block sits below the notch height plus 13pt. Horizontal panel inset and content spacing use the frontmatter tokens; the footer has a 19pt bottom inset.
+
+The main flow is title and count, search, filter strip, scrollable history or centered empty state, then keyboard hints. Rows use 3pt stack spacing, a 36pt square symbol tile, and distinct copy and pin controls. The copy hit area is 28pt × 32pt; pin is 26pt × 32pt. Scroll indicators are hidden. The picker keeps a fixed width and follows the active display; there are no web-style responsive breakpoints. Displays without a notch use a 190pt × 4pt top-center edge trigger, immediate entry detection, and a detached rounded shelf positioned 8pt below the current visible frame’s top. There is no synthetic camera spacer. A narrow hover bridge keeps the shelf open while crossing the menu bar. Such shelves use a 120ms fade, preserving the notch spring on actual notched screens.
+
+Settings use a native window content view of 480pt × 630pt, 28pt outer inset, and 22pt section spacing. Text paragraphs wrap intrinsically. No mobile layout is implemented.
+
+## Elevation & Depth
+
+The silhouette uses a structural SwiftUI shadow: black at 32% opacity, radius 24pt, x offset 0pt, y offset 14pt when expanded; it has no shadow when closed. The AppKit panel's own shadow is disabled. Fields, symbol tiles, filters, and hovered rows separate through translucent tonal layers rather than individual shadows.
+
+**The Single Shadow Rule.** The expanded notch silhouette owns the custom shadow; its internal controls stay flat.
+
+## Shapes
+
+The panel is an uneven rounded rectangle: upper corners 9pt, expanded lower corners using the panel-bottom token, collapsed lower corners 15pt. Anticipation adds 26pt to the measured notch width and 11pt to its height. Row, search, and symbol-tile radii are distinct small curves; filters and count use capsules. The settings icon sits in a 60pt square with the settings-icon radius. Native settings controls retain platform geometry. No custom border system is present.
+
+## Components
+
+### Buttons
+
+Plain, compact symbol controls in the picker; native buttons in settings. The visible `doc.on.doc` copy control appears in every row at 13pt. Settings uses a 15pt gear in a 28pt square. Pin visibility strengthens on hover or selection; pinned state remains visible. Tooltips and accessibility labels identify icon actions. No custom focus-ring token is defined; focus uses native behavior.
+
+### Chips
+
+All, Links, and Pinned are capsule filters with medium labels. Selected state uses the selected-filter token; inactive labels use Secondary White. Pinned includes the native pin symbol. The count badge uses rounded 12pt medium type, 7pt horizontal and 3pt vertical padding, with a white 9% tonal layer.
+
+### Cards / Containers
+
+The notch silhouette is the signature container; history rows form a compact list rather than independently elevated cards. Selection uses Selection Blue, hover uses Hover Layer, and resting rows are transparent. Each row contains a system symbol, title, preview, persistent copy icon, and pin action. Context menus expose copy, pin, rename, and delete through native menus.
+
+### Inputs / Fields
+
+The plain search field uses the search-field token with a magnifier and a conditional clear action. Keyboard-open gives search focus. Search, filter, and item mutations keep selection valid. Rename uses a standard SwiftUI alert text field; settings uses native switch toggles and confirmation alerts. Storage or permission issues appear inline in semantic orange.
+
+### Navigation
+
+Command–Shift–V opens the picker, Up/Down change the selected row; plain Left/Right switch All, Links, and Pinned without wrapping or clearing search, Return copies the selection, and Escape closes. Hover opens on the first sampled entry regardless of pointer speed, including the exact top screen border. Once opening begins it takes keyboard focus without entering search editing; leaving the region for 0.24s closes a hover-opened panel unless search has focus. Copying a chosen row closes the picker and restores the previous app; the separate copy icon confirms in the footer while leaving the picker open. For hover selection, pasting remains a manual Command–V action. Command–Shift–V instead opens a detached, fully rounded picker near the captured caret (pointer fallback) with Return labeled paste and a paste icon per row. Shortcut selection restores the captured target and requests a single paste, subject to Accessibility access; Escape cancels.
+
+### Notch expansion
+
+Opening uses a single continuous spring (response 0.28s, damping fraction 0.92) without a separate anticipation timer. List layout stays mounted; opening resets the list position without animation. Keyboard navigation keeps visible rows still and reveals offscreen rows by the minimum distance. Normal close uses a 0.16s ease-in-out, and exit and reentry during collapse can reverse it without waiting for teardown. Dismissal requires a trigger exit before rearming. Reduce Motion opens directly at expanded geometry and animates panel alpha over 0.12s; close also fades alpha without geometry animation. Keyboard scrolling uses a native NSScrollView and a critically damped motion model (frequency parameter 28), preserving position and velocity between repeated keys. It follows the display refresh rate, yields to trackpad/wheel input, and jumps directly under Reduce Motion. Motion values are native animation parameters, not CSS easing equivalents.
+
+## Do's and Don'ts
+
+### Do:
+- **Do** use native system fonts, SF Symbols, and platform settings controls.
+- **Do** preserve a visible copy icon on every row, including unselected rows.
+- **Do** show selected history rows in the extracted blue and hover through a quiet tonal layer.
+- **Do** preserve all captured text and links as local history and keep hover selection copy-only; shortcut selection pastes into the captured app.
+- **Do** use the alpha-only opening and closing path when Reduce Motion is enabled.
+
+### Don't:
+- **Don't** paste after hover-only selection, cancellation, or a changed destination.
+- **Don't** replace the black notch surface with remote imagery or fetched favicons.
+- **Don't** invent fixed colors for native semantic settings materials.
+- **Don't** treat illustrative renders or browser component previews as an approved native comp.

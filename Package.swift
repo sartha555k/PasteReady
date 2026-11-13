@@ -1,0 +1,10 @@
+// swift-tools-version: 5.9
+import PackageDescription
+let package = Package(
+    name: "NotchLinks",
+    platforms: [.macOS(.v14)],
+    products: [.executable(name: "NotchLinks", targets: ["NotchLinks"])],
+    targets: [
+        .executableTarget(name: "NotchLinks")
+    ]
+)
