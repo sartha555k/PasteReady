@@ -17,6 +17,23 @@ struct RenderPreview {
             ClipboardEntry(content: "Hi! Thanks for taking the time to review my application.", title: "A quick introduction"),
             ClipboardEntry(content: "https://docs.google.com/document/d/example/edit", title: "Google Doc")
         ]
+        // Optional source image is used only for local review renders, never shipped in the app.
+        if CommandLine.arguments.count > 2 {
+            let source = URL(fileURLWithPath: CommandLine.arguments[2])
+            guard let preview = ClipboardImageCodec.preview(at: source, maxSize: 1200),
+                  let tiff = preview.tiffRepresentation,
+                  let rep = NSBitmapImageRep(data: tiff), let png = rep.representation(using: .png, properties: [:]) else { fatalError("Cannot load sample image") }
+            store.captureImage(png, metadata: ClipboardImageCodec.inspect(png, type: .png))
+            let image = store.links.first { $0.isImage }!
+            store.rename(image, title: "Sample image")
+            state.selectedID = image.id
+            try render(PanelView(store: store, state: state), size: NSSize(width: 540, height: 570), to: directory.appendingPathComponent("image-list.png"))
+            state.previewID = image.id
+            try render(PanelView(store: store, state: state), size: NSSize(width: 540, height: 570), to: directory.appendingPathComponent("image-preview.png"))
+            state.detached = true; state.notchHeight = 0; state.pastesSelection = true
+            try render(PanelView(store: store, state: state), size: NSSize(width: 540, height: 570), to: directory.appendingPathComponent("image-shortcut.png"))
+            state.previewID = nil; state.detached = false; state.notchHeight = 32; state.pastesSelection = false
+        }
         state.selectedID = store.links.first?.id
         try render(PanelView(store: store, state: state), size: NSSize(width: 540, height: 570), to: directory.appendingPathComponent("populated.png"))
         state.previewID = store.links.first?.id

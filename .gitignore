@@ -6,3 +6,7 @@ build/
 .impeccable/questions/
 .impeccable/review/
 .impeccable/mocks/
+
+# Local deployment credentials and project links.
+.vercel/
+.env*.local

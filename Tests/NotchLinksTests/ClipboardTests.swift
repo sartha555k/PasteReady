@@ -18,7 +18,11 @@ final class ClipboardTests {
             ("retention protects pins", tests.testRetentionProtectsPins),
             ("link filtering and search", tests.testClassificationAndSearch),
             ("empty and oversized text is ignored", tests.testEmptyAndOversizedTextIgnored),
-            ("damaged history is preserved", tests.testDamagedHistoryIsPreserved)
+            ("damaged history is preserved", tests.testDamagedHistoryIsPreserved),
+            ("PNG and TIFF persist and copy exact bytes", tests.testImagePersistence),
+            ("image pins deduplication and retention", tests.testImageRetention),
+            ("image polling privacy and precedence", tests.testImagePolling),
+            ("invalid images and missing attachments", tests.testImageFailures)
         ]
         for (name, test) in cases {
             tests.setUp()
@@ -26,7 +30,7 @@ final class ClipboardTests {
             try test()
             print("PASS: \(name)")
         }
-        print("All 7 checks passed.")
+        print("All \(cases.count) checks passed.")
     }
     var directory: URL!
     var file: URL!
@@ -135,4 +139,103 @@ final class ClipboardTests {
         store.capture("a new entry")
         XCTAssertEqual(try Data(contentsOf: file), damaged)
     }
+    func sampleImage(_ type: NSBitmapImageRep.FileType = .png) -> Data {
+        let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: 80, pixelsHigh: 50,
+            bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+            colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
+        let pixels = bitmap.bitmapData!
+        for y in 0..<50 { for x in 0..<80 {
+            let offset = y * bitmap.bytesPerRow + x * 4
+            pixels[offset] = UInt8(x * 255 / 80); pixels[offset + 1] = 102
+            pixels[offset + 2] = 179; pixels[offset + 3] = x < 20 ? 102 : 255
+        } }
+        return bitmap.representation(using: type, properties: [:])!
+    }
+    func pump() { RunLoop.main.run(until: Date().addingTimeInterval(0.2)) }
+    func testImagePersistence() throws {
+        for (format, type) in [(NSBitmapImageRep.FileType.png, NSPasteboard.PasteboardType.png), (.tiff, .tiff)] {
+            let store = makeStore(), data = sampleImage(format)
+            let image = ClipboardImageCodec.inspect(data, type: type)
+            XCTAssertNotNil(image)
+            store.captureImage(data, metadata: image)
+            let restored = makeStore(), entry = restored.links.first { $0.image?.pasteboardType == type.rawValue }!
+            XCTAssertTrue(entry.isImage)
+            XCTAssertFalse(entry.isLink)
+            XCTAssertEqual(entry.image?.width, 80)
+            XCTAssertEqual(entry.image?.height, 50)
+            XCTAssertNotNil(restored.imagePreview(entry))
+            XCTAssertNotNil(restored.imagePreview(entry, fullSize: true))
+            XCTAssertTrue(restored.copy(entry))
+            XCTAssertEqual(board.data(forType: type), data)
+            restored.poll()
+            XCTAssertEqual(restored.links.count, store.links.count)
+        }
+    }
+    func testImageRetention() throws {
+        let store = makeStore(), data = sampleImage(), image = ClipboardImageCodec.inspect(sampleImage(), type: .png)!
+        store.captureImage(data, metadata: image)
+        let entry = store.links[0]
+        store.togglePin(entry)
+        store.rename(entry, title: "My screenshot")
+        store.captureImage(data, metadata: image)
+        XCTAssertEqual(store.links.count, 1)
+        XCTAssertEqual(store.links[0].title, "My screenshot")
+        for index in 0..<25 { store.capture("Note \(index)") }
+        XCTAssertEqual(store.links.count, 21)
+        let attachment = directory.appendingPathComponent("images/" + image.filename)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: attachment.path))
+        store.clearRecent()
+        XCTAssertEqual(makeStore().links.count, 1)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: attachment.path))
+        store.remove(entry)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: attachment.path))
+        store.captureImage(data, metadata: image)
+        for index in 0..<21 { store.capture("New \(index)") }
+        XCTAssertEqual(store.links.count, 20)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: attachment.path))
+        store.captureImage(data, metadata: image)
+        store.clearAll()
+        XCTAssertFalse(FileManager.default.fileExists(atPath: attachment.path))
+    }
+    func testImagePolling() {
+        let store = makeStore(), data = sampleImage()
+        board.clearContents(); board.setData(data, forType: .png); board.setString("image alt text", forType: .string)
+        store.poll(); pump()
+        XCTAssertEqual(store.links.count, 1)
+        XCTAssertTrue(store.links[0].isImage)
+        let state = PanelState()
+        state.linksOnly = true
+        XCTAssertTrue(state.filtered(store.sorted).isEmpty)
+        state.linksOnly = false; state.query = "image"
+        XCTAssertEqual(state.filtered(store.sorted).count, 1)
+        store.clearAll()
+        for privateType in ["org.nspasteboard.ConcealedType", "org.nspasteboard.TransientType"] {
+            board.clearContents(); board.setData(data, forType: .png); board.setData(Data(), forType: .init(privateType))
+            store.poll(); pump(); XCTAssertTrue(store.links.isEmpty)
+        }
+        board.clearContents(); board.setData(data, forType: .png); board.setString("file:///tmp/example.png", forType: .fileURL)
+        store.poll(); pump(); XCTAssertTrue(store.links.isEmpty)
+        board.clearContents(); board.setData(data, forType: .png)
+        store.poll(); store.clearAll(); pump(); XCTAssertTrue(store.links.isEmpty)
+        board.clearContents(); board.setData(data, forType: .png)
+        store.poll(); store.paused = true; store.paused = false; pump(); XCTAssertTrue(store.links.isEmpty)
+    }
+    func testImageFailures() throws {
+        let store = makeStore()
+        XCTAssertTrue(ClipboardImageCodec.inspect(Data("invalid".utf8), type: .png) == nil)
+        XCTAssertTrue(ClipboardImageCodec.inspect(Data(repeating: 0, count: ClipboardImageCodec.maxBytes + 1), type: .png) == nil)
+        store.captureImage(Data(), metadata: nil)
+        XCTAssertTrue(store.links.isEmpty)
+        XCTAssertNotNil(store.captureNotice)
+        let data = sampleImage(), image = ClipboardImageCodec.inspect(sampleImage(), type: .png)!
+        store.captureImage(data, metadata: image)
+        let entry = store.links[0]
+        try FileManager.default.removeItem(at: directory.appendingPathComponent("images/" + image.filename))
+        board.clearContents(); board.setString("Keep the current clipboard", forType: .string)
+        XCTAssertFalse(store.copy(entry))
+        XCTAssertEqual(board.string(forType: .string), "Keep the current clipboard")
+        let permissions = try FileManager.default.attributesOfItem(atPath: file.path)[.posixPermissions] as! NSNumber
+        XCTAssertEqual(permissions.intValue, 0o600)
+    }
+
 }

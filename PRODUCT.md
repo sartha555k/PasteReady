@@ -32,3 +32,6 @@ Black popover, native Apple-level visual restraint, smooth spring-like expansion
 
 ## Preview and scope
 Space or the visible preview control toggles a read-only full-content preview. Escape returns to the list first. Preview preserves all captured text, including line breaks and tabs, without fetching URLs or changing the clipboard. Spaces remain available while editing search. In-app update notifications are explicitly deferred by the user.
+
+## Image history extension
+Confirmed: copied PNG and TIFF images join the history with a small aspect-fit thumbnail and a Space-toggle image preview. Existing All/Links/Pinned filters, copy controls, pins, 20-recent limit, local-only storage, and keyboard paste behavior apply. Images are stored as local attachments alongside the existing JSON, preserving old history and the app identity. The website is explicitly outside this update.

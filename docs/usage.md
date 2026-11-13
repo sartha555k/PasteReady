@@ -4,7 +4,7 @@
 
 Extract **build/PasteReady.zip**, move **PasteReady.app** to Applications, and open it. It lives in the menu bar without a Dock icon.
 
-1. Copy text or a web link anywhere with Command–C.
+1. Copy text, a web link, or an image anywhere with Command–C.
 2. Hover over your notch, or press **Command–Shift–V**.
 3. Click the **copy icon** beside an item. The picker stays open and confirms the copy. Clicking the row or pressing Return also copies and closes the picker.
 4. Return to your form and press **Command–V**.
@@ -13,7 +13,7 @@ For direct paste, first put your cursor in a text field and press **Command–Sh
 
 ### Full preview
 
-Press **Space** to open the selected item's complete text or URL. Press Space again, click **Space close preview**, or use the preview's close button to return to the list. **Escape** closes the preview first; a second Escape closes the picker. Long content scrolls vertically and can be selected, while preserving line breaks and tabs. Previewing does not copy, paste, edit the item, or load URLs from the network.
+Press **Space** to open the selected item's complete text, URL, or image. Press Space again, click **Space close preview**, or use the preview's close button to return to the list. **Escape** closes the preview first; a second Escape closes the picker. Long content scrolls vertically and can be selected, while preserving line breaks and tabs. Previewing does not copy, paste, edit the item, or load URLs from the network.
 
 While typing a search phrase, Space inserts a normal space. Use Up/Down to select a result, then Space to preview it, or click **Space preview**. Holding Space does not repeatedly toggle the view. The original list remains in place behind the preview.
 
@@ -26,7 +26,7 @@ On a display without a notch, hover at the center of the top screen edge. The 19
 
 History is captured while the app is running. It cannot recover things copied before launch. macOS may ask for clipboard access: allow it for continuous capture. Manage it in **System Settings → Privacy & Security → Paste from Other Apps** when available. Copy-only notch use needs no Accessibility permission. **Direct paste requires Accessibility access for PasteReady**. Enable it from the app’s Settings → Direct paste → Enable, then switch on PasteReady under System Settings → Privacy & Security → Accessibility. Input Monitoring is not required.
 
-Text and URLs are supported; images, file copies, rich formatting, empty text, and individual text items larger than 100 KB are excluded. Password-manager entries marked concealed or transient are skipped. Ordinary text is otherwise captured, so use Pause clipboard history when needed.
+Text, URLs, and copied PNG/TIFF images are supported. Images appear as thumbnails in All and Pinned; Space opens a larger aspect-fit preview. Image originals are copied back in their stored format, preserving transparency, and can be pasted into apps that accept images. Each image must be at most 20 MB, 40 megapixels, and 16,384 pixels per side. File copies, rich text formatting, empty text, and individual text items larger than 100 KB are excluded. Images are stored locally in an images folder alongside history.json; removing an image or trimming history removes its attachment after the history is saved. Password-manager entries marked concealed or transient are skipped. Ordinary text is otherwise captured, so use Pause clipboard history when needed.
 
 History is stored as local JSON at `~/Library/Application Support/NotchLinks/history.json`, accessible only to your user account by file permissions. It is not encrypted. The app makes no network requests. Up to 20 unpinned items are retained; pins stay until removed. Repeated copies update recency without removing custom names or pins.
 
@@ -38,3 +38,5 @@ If another utility owns Command–Shift–V, disable that utility’s shortcut a
 ## Updating
 
 Run the install command in the [README](../README.md) again to get the latest release. History and pins are preserved. There is no automatic updater yet.
+
+Image support is part of the unreleased 0.5.0 development build. The existing curl command continues to install the latest published release; it will install image support once that release is published. Installed copies do not update automatically.

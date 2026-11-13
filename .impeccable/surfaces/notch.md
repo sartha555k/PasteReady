@@ -8,3 +8,7 @@ STORY: Copy a link during normal work; hover at the camera or press Command–Sh
 FIRST VIEWPORT: 480pt black panel attached to the screen edge, safe spacing below the camera, title and item count, search field, All, Links and Pinned filters, 4–5 compact rows, and keyboard hints at the foot. Empty state explains copying a first item.
 FORM: Brief-pinned native Apple utility, overriding alternate visual systems. seed:7db0785477cab1a2. The roll ran degraded; no challengers were available. Entry at any speed starts one continuous spring expansion; reduced motion uses a fade.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+
+## Image clipboard extension
+
+Keep the incumbent native black panel, SF type, row dimensions, and blue selection. Images join All and Pinned alongside text; Links stays link-only. Each image has a bounded aspect-fit thumbnail in the existing 32pt icon slot, a title, pixel dimensions and size, and the same copy/pin actions. Space toggles an aspect-fit image preview inside the existing preview area; Escape returns to the list. No website changes or update notifications. Finish with persistence/copy/retention regression checks, native render evidence, and an independent finish review.

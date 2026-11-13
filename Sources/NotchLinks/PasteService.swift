@@ -14,7 +14,7 @@ enum PasteOutcome { case sent, needsPermission, unavailable }
 protocol PasteHandling: AnyObject {
     func capture() -> PasteDestination?
     func cancel()
-    func paste(to destination: PasteDestination, content: String, completion: @escaping (PasteOutcome) -> Void)
+    func paste(to destination: PasteDestination, entry: ClipboardEntry, completion: @escaping (PasteOutcome) -> Void)
 }
 
 final class PasteService: PasteHandling {
@@ -55,12 +55,16 @@ final class PasteService: PasteHandling {
         }
         return destination
     }
-    func paste(to destination: PasteDestination, content: String, completion: @escaping (PasteOutcome) -> Void) {
+    func paste(to destination: PasteDestination, entry: ClipboardEntry, completion: @escaping (PasteOutcome) -> Void) {
         cancel()
         let token = request
         let clipboardVersion = NSPasteboard.general.changeCount
         guard Self.isEnabled else { completion(.needsPermission); return }
-        guard NSPasteboard.general.string(forType: .string) == content else { completion(.unavailable); return }
+        if let image = entry.image {
+            guard NSPasteboard.general.availableType(from: [.init(image.pasteboardType)]) != nil else { completion(.unavailable); return }
+        } else {
+            guard NSPasteboard.general.string(forType: .string) == entry.content else { completion(.unavailable); return }
+        }
         guard !destination.app.isTerminated else { completion(.unavailable); return }
         destination.app.activate(options: [])
         let deadline = Date().addingTimeInterval(0.8)

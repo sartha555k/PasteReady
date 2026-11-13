@@ -122,7 +122,7 @@ struct PanelView: View {
             TextField("Name", text: $editedTitle)
             Button("Cancel", role: .cancel) { editing = nil }
             Button("Save") { if let link = editing { store.rename(link, title: editedTitle) }; editing = nil }
-        } message: { Text("Give this link a name you’ll recognize.") }
+        } message: { Text("Give this item a name you’ll recognize.") }
     }
 
     private var silhouette: UnevenRoundedRectangle {
@@ -142,6 +142,14 @@ struct PanelView: View {
                 Button("Allow clipboard access in System Settings") {
                     NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Pasteboard")!)
                 }.font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.orange).padding(.bottom, 10)
+            }
+            if let notice = store.captureNotice {
+                HStack(alignment: .top, spacing: 8) {
+                    Text(notice).font(.system(size: 11)).foregroundStyle(.orange)
+                    Spacer(minLength: 0)
+                    Button { store.captureNotice = nil } label: { Image(systemName: "xmark").frame(width: 22, height: 22) }
+                        .buttonStyle(PanelIconButtonStyle()).accessibilityLabel("Dismiss clipboard notice")
+                }.padding(.bottom, 8)
             }
             ZStack {
                 if items.isEmpty { emptyState }
@@ -250,7 +258,22 @@ struct PanelView: View {
                     Image(systemName: "xmark").font(.system(size: 11, weight: .semibold)).frame(width: 28, height: 28)
                 }.buttonStyle(PanelIconButtonStyle()).foregroundStyle(PanelPalette.secondary).accessibilityLabel("Close full preview")
             }
-            ClipboardPreviewText(id: link.id, text: link.content)
+            Group {
+                if link.isImage {
+                    VStack(spacing: 6) {
+                        if let image = store.imagePreview(link, fullSize: true) {
+                            Image(nsImage: image).resizable().scaledToFit()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .accessibilityLabel("Full image preview: \(link.title)")
+                            Text(link.preview).font(.system(size: 10.5)).foregroundStyle(PanelPalette.secondary)
+                        } else {
+                            Image(systemName: "photo").font(.system(size: 24)).foregroundStyle(PanelPalette.secondary)
+                            Text("Image unavailable").font(.system(size: 13, weight: .medium))
+                            Text("Copy the original image again.").font(.system(size: 11)).foregroundStyle(PanelPalette.secondary)
+                        }
+                    }.padding(10).frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else { ClipboardPreviewText(id: link.id, text: link.content) }
+            }
                 .background(.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 12))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
@@ -272,10 +295,17 @@ struct PanelView: View {
         return HStack(spacing: 10) {
             Button { state.choose?(link) } label: {
                 HStack(spacing: 11) {
-                    Image(systemName: link.symbol).font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(selected ? PanelPalette.accent : .white.opacity(0.72))
-                        .frame(width: 32, height: 32)
-                        .background(selected ? PanelPalette.accent.opacity(0.09) : .white.opacity(0.045), in: RoundedRectangle(cornerRadius: 9))
+                    Group {
+                        if link.isImage, let thumbnail = store.imagePreview(link) {
+                            Image(nsImage: thumbnail).resizable().scaledToFit().padding(2)
+                        } else {
+                            Image(systemName: link.symbol).font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(selected ? PanelPalette.accent : .white.opacity(0.72))
+                        }
+                    }
+                    .frame(width: 32, height: 32)
+                    .background(selected ? PanelPalette.accent.opacity(0.09) : .white.opacity(0.045), in: RoundedRectangle(cornerRadius: 9))
+                    .clipShape(RoundedRectangle(cornerRadius: 9))
                     VStack(alignment: .leading, spacing: 4) {
                         Text(link.title).font(.system(size: 13, weight: .medium)).lineLimit(1)
                         Text(link.preview).font(.system(size: 10.5)).foregroundStyle(.white.opacity(selected ? 0.72 : 0.58))
@@ -283,10 +313,10 @@ struct PanelView: View {
                     }
                     Spacer(minLength: 0)
                 }.contentShape(Rectangle())
-            }.buttonStyle(.plain).accessibilityLabel("\(link.title), \(link.content)")
+            }.buttonStyle(.plain).accessibilityLabel("\(link.title), \(link.isImage ? link.preview : link.content)")
             Button {
                 if state.pastesSelection { state.choose?(link) }
-                else { store.copy(link); state.message = "Copied to clipboard" }
+                else { if store.copy(link) { state.message = "Copied to clipboard" } }
             } label: {
                 Image(systemName: state.pastesSelection ? "arrow.turn.down.left" : "doc.on.doc")
                     .font(.system(size: 12)).frame(width: 28, height: 30).foregroundStyle(.white.opacity(0.76))
@@ -296,7 +326,7 @@ struct PanelView: View {
                 Image(systemName: link.pinned ? "pin.fill" : "pin").font(.system(size: 11))
                     .frame(width: 26, height: 30)
                     .foregroundStyle(.white.opacity(link.pinned ? 0.72 : hoveredID == link.id || selected ? 0.55 : 0))
-            }.buttonStyle(PanelIconButtonStyle()).help(link.pinned ? "Unpin link" : "Pin link")
+            }.buttonStyle(PanelIconButtonStyle()).help(link.pinned ? "Unpin item" : "Pin item")
                 .accessibilityLabel(link.pinned ? "Unpin \(link.title)" : "Pin \(link.title)")
         }
         .padding(.horizontal, 9).padding(.vertical, 10)
@@ -308,7 +338,7 @@ struct PanelView: View {
         }
         .onHover { over in hoveredID = over ? link.id : nil }
         .contextMenu {
-            Button("Copy item") { store.copy(link); state.message = "Copied to clipboard" }
+            Button("Copy item") { if store.copy(link) { state.message = "Copied to clipboard" } }
             Button(link.pinned ? "Unpin" : "Pin") { store.togglePin(link) }
             Button("Rename…") { editedTitle = link.title; editing = link }
             Divider()
@@ -322,7 +352,7 @@ struct PanelView: View {
                 .font(.system(size: 29, weight: .light)).foregroundStyle(.white.opacity(0.7))
             Text(state.query.isEmpty ? (state.favoritesOnly ? "No pinned items" : state.linksOnly ? "No links yet" : "No clipboard history yet") : "No matching items")
                 .font(.system(size: 16, weight: .medium))
-            Text(state.query.isEmpty ? (state.favoritesOnly ? "Pin an item from All to keep it close." : state.linksOnly ? "Copy a web address to find it here.\nYour other text stays in All." : "Copy a profile link, a note, or any text.\nIt’ll be waiting here when you need it.") : "Try a different word or part of the address.")
+            Text(state.query.isEmpty ? (state.favoritesOnly ? "Pin an item from All to keep it close." : state.linksOnly ? "Copy a web address to find it here.\nYour other copies stay in All." : "Copy text, a link, or an image.\nIt’ll be waiting here when you need it.") : "Try a different word or part of the address.")
                 .font(.system(size: 12)).foregroundStyle(.white.opacity(0.6)).multilineTextAlignment(.center).lineSpacing(4)
             Spacer()
         }.frame(maxWidth: .infinity)

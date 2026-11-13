@@ -30,7 +30,7 @@ struct SettingsView: View {
                 }
             }
             VStack(alignment: .leading, spacing: 10) {
-                Label("Copy text or a link anywhere on your Mac.", systemImage: "doc.on.doc")
+                Label("Copy text, a link, or an image on your Mac.", systemImage: "doc.on.doc")
                 Label("Hover at the notch or top-center screen edge.", systemImage: "cursorarrow")
                 Label("With ⌘⇧V, choose an item to paste at your cursor.", systemImage: "return")
             }.font(.system(size: 13)).foregroundStyle(.secondary)
@@ -62,7 +62,7 @@ struct SettingsView: View {
             if let loginError { Text(loginError).font(.caption).foregroundStyle(.orange) }
             VStack(alignment: .leading, spacing: 8) {
                 Label("Local clipboard history", systemImage: "internaldrive").font(.system(size: 13, weight: .semibold))
-                Text("Up to 20 recent text items, plus your pins. Stored on this Mac, with no network requests. Images and files aren’t captured. Items marked private by password managers are skipped.")
+                Text("Up to 20 recent copies, plus your pins. Text, links, and PNG/TIFF images up to 20 MB are stored on this Mac. File copies aren’t captured. Items marked private by password managers are skipped.")
                     .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 Text("If macOS asks to read your clipboard, choose Allow. You can change this in Privacy & Security → Paste from Other Apps.")
                     .font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)

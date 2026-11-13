@@ -19,7 +19,7 @@ The script creates `build/PasteReady.app` and `build/PasteReady.zip`, signing th
 ./scripts/test.sh
 ```
 
-Seven executable checks cover exact text persistence/copying, deduplication, pinned retention, concealed and paused clipboard handling, filtering/search, size limits, and preservation of a damaged history file. The test runner uses a unique temporary pasteboard, not your general clipboard. It works with Command Line Tools without requiring XCTest/Xcode.
+Eleven executable checks cover exact text persistence/copying, deduplication, pinned retention, concealed and paused clipboard handling, filtering/search, size limits, preservation of a damaged history file, exact PNG/TIFF copying, image persistence and thumbnails, image retention/cleanup, private image skipping, and cancellation of pending image captures. The test runner uses a unique temporary pasteboard, not your general clipboard. It works with Command Line Tools without requiring XCTest/Xcode.
 
 Preview renders under `.impeccable/review/` use illustrative data, not personal clipboard content. The renderer is a development tool and is not bundled into the app.
 

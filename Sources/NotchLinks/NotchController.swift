@@ -306,13 +306,13 @@ final class NotchController {
 
     private func choose(_ link: ClipboardEntry) {
         guard !isClosing else { return }
-        store.copy(link)
+        guard store.copy(link) else { return }
         let destination = openedByKeyboard ? pasteDestination : nil
         if let destination {
             close(restorePreviousApp: false) { [weak self] in
                 guard let self else { return }
                 let token = self.generation
-                self.pasteHandler.paste(to: destination, content: link.content) { [weak self] outcome in
+                self.pasteHandler.paste(to: destination, entry: link) { [weak self] outcome in
                     guard let self, self.generation == token else { return }
                     if case .sent = outcome { return }
                     self.showPasteFallback(outcome)

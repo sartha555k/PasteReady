@@ -2,10 +2,12 @@ import AppKit
 
 private final class TestPasteHandler: PasteHandling {
     var pasted: [PasteDestination] = []
+    var entries: [ClipboardEntry] = []
     func capture() -> PasteDestination? { PasteDestination(app: .current) }
     func cancel() {}
-    func paste(to destination: PasteDestination, content: String, completion: @escaping (PasteOutcome) -> Void) {
+    func paste(to destination: PasteDestination, entry: ClipboardEntry, completion: @escaping (PasteOutcome) -> Void) {
         pasted.append(destination)
+        entries.append(entry)
         completion(.sent)
     }
 }
@@ -286,9 +288,35 @@ struct InteractionTests {
         controller.close()
         pump(for: 0.2)
         print("PASS: search spaces, Escape and the preview button retain the expected behavior")
+        let pixels = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: 2, pixelsHigh: 2, bitsPerSample: 8,
+            samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
+        memset(pixels.bitmapData!, 255, pixels.bytesPerRow * 2)
+        let png = pixels.representation(using: .png, properties: [:])!
+        store.clearAll()
+        store.captureImage(png, metadata: ClipboardImageCodec.inspect(png, type: .png))
+        let imageEntry = store.links[0]
+        controller.state.query = ""
+        controller.state.favoritesOnly = false; controller.state.linksOnly = false
+        controller.open(keyboard: false); pump(for: 0.12)
+        controller.state.selectedID = imageEntry.id
+        let boardVersion = pasteboard.changeCount
+        key(49, characters: " ")
+        precondition(controller.state.previewID == imageEntry.id && pasteboard.changeCount == boardVersion,
+            "Image preview must open without replacing the clipboard")
+        key(53, characters: "\u{1B}")
+        precondition(controller.state.previewID == nil)
+        key(36, characters: "\r"); pump(for: 0.2)
+        precondition(pasteboard.data(forType: .png) == png, "Hover selection must restore exact PNG bytes")
+        controller.open(keyboard: true); pump(for: 0.1)
+        controller.state.focusSearch = false; controller.state.selectedID = imageEntry.id
+        key(36, characters: "\r"); pump(for: 0.25)
+        precondition(pasteHandler.entries.last?.image == imageEntry.image,
+            "Shortcut selection must route the image payload through direct paste")
+        precondition(pasteboard.data(forType: .png) == png)
+        print("PASS: image Space/Escape preview, hover copy, and shortcut paste routing")
         inputWindow.orderOut(nil)
         print("PASS: interrupted close/reopen stays open and keyboard ready")
-        print("All 15 native interaction checks passed. Paste dispatch was mocked; no system keys were posted.")
+        print("All 16 native interaction checks passed. Paste dispatch was mocked; no system keys were posted.")
     }
 
     @MainActor static func key(_ code: UInt16, characters: String, modifiers: NSEvent.ModifierFlags = [], repeating: Bool = false) {
