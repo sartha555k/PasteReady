@@ -24,3 +24,7 @@ swiftc -O scripts/RenderWebsiteDemo.swift -o /tmp/RenderWebsiteDemo
 ```
 
 Run these commands from the repository root. The renderer creates the MP4 and poster without recording the desktop or reading the clipboard. Playback respects reduced motion, visibility, and manual pause.
+
+## Vercel
+
+Import the GitHub repository with **Root Directory** set to `website` and **Framework Preset** set to `Other`. The checked-in `vercel.json` serves `dist/` directly; no install or build command is needed. For a manual production deployment, run `npx vercel --prod` from `website/`. Local project linking is ignored by Git.

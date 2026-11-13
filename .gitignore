@@ -6,3 +6,6 @@ build/
 .impeccable/questions/
 .impeccable/review/
 .impeccable/mocks/
+
+# Local Vercel project link.
+.vercel/
