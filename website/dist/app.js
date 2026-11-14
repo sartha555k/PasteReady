@@ -10,7 +10,7 @@ copyButton.addEventListener('click', async () => {
     await navigator.clipboard.writeText(command.textContent.trim());
     copyButton.querySelector('span').textContent = 'Copied';
     copyButton.querySelector('use').setAttribute('href', 'assets/icons.svg#i-check');
-    copyStatus.textContent = 'Copied. Next: hold Command (⌘) and press Space, type Terminal, then press Return.';
+    copyStatus.textContent = 'Command copied. Open Terminal, paste with ⌘ V, then press Return.';
     resetCopy = setTimeout(() => {
       copyButton.querySelector('span').textContent = 'Copy install command';
       copyButton.querySelector('use').setAttribute('href', 'assets/icons.svg#i-copy');
@@ -24,7 +24,7 @@ copyButton.addEventListener('click', async () => {
     selection.removeAllRanges();
     selection.addRange(range);
     command.focus();
-    copyStatus.textContent = 'Copy access is unavailable. Select the command and press ⌘C, or touch and hold to copy.';
+    copyStatus.textContent = 'Couldn’t copy automatically. The command is selected below. Press ⌘ C to copy it, or touch and hold on your phone.';
     copyStatus.classList.add('copy-error');
   }
 });

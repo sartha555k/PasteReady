@@ -205,7 +205,15 @@
         "name": "stacked-hero",
         "value": "900px"
       }
-    ]
+    ],
+    "readability": {
+      "muted": "#4f5a50",
+      "heroIntro": "19px / 18px stacked",
+      "instructions": "16px/1.65",
+      "body": "17px",
+      "supporting": "14\u201315px",
+      "copy": "Literal feature names and plain installation steps; production URL pasteready.vercel.app"
+    }
   },
   "components": [
     {

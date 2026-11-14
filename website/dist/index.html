@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#fbfcf9">
-  <meta name="description" content="PasteReady is a little clipboard history for your Mac. Keep your recent links and text within reach, at the notch or with a keyboard shortcut.">
-  <meta property="og:title" content="PasteReady — Copy once. Keep it close.">
-  <meta property="og:description" content="Your links and words, ready to use again. A native clipboard history for Mac.">
+  <meta name="description" content="A clipboard history for Mac. Find text and links you copied earlier, then copy them again from your notch.">
+  <meta property="og:title" content="PasteReady — Clipboard history for Mac">
+  <meta property="og:description" content="Find text and links you copied earlier. Open your clipboard history from the notch or with a keyboard shortcut.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://pasteready-mac.sarthak1233.chatgpt.site/">
-  <meta property="og:image" content="https://pasteready-mac.sarthak1233.chatgpt.site/assets/product.png">
-  <link rel="canonical" href="https://pasteready-mac.sarthak1233.chatgpt.site/">
-  <title>PasteReady — Copy once. Keep it close.</title>
+  <meta property="og:url" content="https://pasteready.vercel.app/">
+  <meta property="og:image" content="https://pasteready.vercel.app/assets/product.png">
+  <link rel="canonical" href="https://pasteready.vercel.app/">
+  <title>PasteReady — Clipboard history for Mac</title>
   <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/bodoni-moda.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
@@ -23,28 +23,28 @@
 <header class="site-header">
   <a class="brand" href="#top" aria-label="PasteReady home">PasteReady</a>
   <nav aria-label="Main navigation">
-    <a href="#features">The details</a>
+    <a href="#features">Features</a>
     <a href="https://github.com/sartha555k/PasteReady">GitHub <svg aria-hidden="true"><use href="assets/icons.svg#i-arrow"/></svg></a>
   </nav>
 </header>
 <main id="main">
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-copy">
-    <h1 id="hero-title">Copy once. Keep it close.</h1>
-    <p class="intro">PasteReady remembers the text and links you copy. Move your pointer to the top-center of your Mac’s screen to find them and copy them again.</p>
+    <h1 id="hero-title">Find what you copied.</h1>
+    <p class="intro">A clipboard history for your Mac. Copy your LinkedIn profile, a note, or any text. Find it later at the notch, without going back to the original page.</p>
     <div class="install" id="install">
       <button class="copy-command" type="button" aria-label="Copy install command" aria-describedby="copy-status">
         <svg aria-hidden="true"><use href="assets/icons.svg#i-copy"/></svg><span>Copy install command</span>
       </button>
       <p class="install-meta">macOS 14+ · Apple Silicon &amp; Intel</p>
       <div class="install-help" aria-labelledby="install-steps-title">
-        <h2 id="install-steps-title">Install in three simple steps</h2>
+        <h2 id="install-steps-title">How to install</h2>
         <ol>
-          <li><strong>Copy the command.</strong><p>Click “Copy install command” above. You’ll paste it in the last step.</p></li>
-          <li><strong>Open Terminal, a built-in Mac app.</strong><p>Hold Command (⌘) and press Space. Type <b>Terminal</b>, then press Return (Enter).</p></li>
-          <li><strong>Paste it and press Return.</strong><p>In Terminal, hold Command (⌘) and press V. Press Return (Enter) to start the installation.</p></li>
+          <li><strong>Copy the command.</strong><p>Click the button above to copy the install command.</p></li>
+          <li><strong>Open Terminal.</strong><p>Press Command (⌘) + Space, type <b>Terminal</b>, then press Return (Enter). Terminal is already on your Mac.</p></li>
+          <li><strong>Paste it and press Return.</strong><p>In Terminal, press Command (⌘) + V to paste the command. Press Return to install PasteReady.</p></li>
         </ol>
-        <p class="install-result">PasteReady will open when it’s ready. Allow clipboard access if your Mac asks.</p>
+        <p class="install-result">PasteReady opens after installation. Allow clipboard access if macOS asks.</p>
       </div>
       <details class="command-details">
         <summary>View the Terminal command <svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary>
@@ -62,8 +62,8 @@
         <track kind="captions" src="assets/demo.vtt" srclang="en" label="English">
         Your browser cannot play this video. Copy a link, retrieve it from the notch, and paste it into your form.
       </video>
-      <p id="demo-description">Copy once. Find it at the notch. Paste it again.</p>
-      <p class="demo-note">Silent illustrated walkthrough · sample content</p>
+      <p id="demo-description">Copy a link. Open your history. Use it again.</p>
+      <p class="demo-note">12-second demo · no sound · sample content</p>
     </aside>
   </section>
 
@@ -75,7 +75,7 @@
     </div>
     <div id="view-notch" class="product-view" role="tabpanel" aria-labelledby="tab-notch" tabindex="0">
       <img src="assets/product.png" width="1080" height="1140" alt="PasteReady clipboard showing pinned profile links, recent text, search, and a copy button beside each item. Sample content.">
-      <p>Copy text or a link as usual. Hover at the notch and use an item’s copy icon. Return to your form and press Command (⌘) + V to paste it.</p>
+      <p>Move your pointer to the notch to open your history. Click the copy icon beside an item, then press <kbd>⌘ V</kbd> wherever you need it.</p>
     </div>
     <div id="view-paste" class="product-view" role="tabpanel" aria-labelledby="tab-paste" tabindex="0" hidden>
       <img src="assets/shortcut.png" width="1080" height="1140" alt="PasteReady’s floating keyboard picker, with a paste action beside each recent clipboard item. Sample content." loading="lazy">
@@ -83,29 +83,29 @@
     </div>
     <div id="view-preview" class="product-view" role="tabpanel" aria-labelledby="tab-preview" tabindex="0" hidden>
       <img src="assets/preview.png" width="1080" height="1140" alt="PasteReady showing the full selectable text of a sample introduction." loading="lazy">
-      <p>Press <kbd>Space</kbd> to see the full text or link.<br> Press it again to return to your list.</p>
+      <p>Press <kbd>Space</kbd> to read the selected item in full. Press it again to return to your history.</p>
     </div>
-    <p class="capture-note">Real app, sample content. UI preview from the current development build.</p>
+    <p class="capture-note">App screenshots with sample content. Shown from the development build.</p>
   </section>
 
   <section class="features" id="features" aria-labelledby="features-title">
-    <h2 id="features-title">Built around your next paste.</h2>
+    <h2 id="features-title">What PasteReady does</h2>
     <dl>
-      <div><dt>Remember the last 20.</dt><dd>Your recent text and links in one place. Pin favorites to keep them beyond the recent history.</dd></div>
-      <div><dt>Find it without the hunt.</dt><dd>Search a word or switch between All, Links, and Pinned. Arrow keys move through your list.</dd></div>
-      <div><dt>Keep your place.</dt><dd><kbd>⌘⇧V</kbd> opens near your caret, or near your pointer when its location isn’t available. Return pastes into the previous app.</dd></div>
-      <div><dt>Read before you paste.</dt><dd><kbd>Space</kbd> opens a scrollable, selectable preview. Line breaks and tabs stay as you copied them.</dd></div>
-      <div><dt>A notch is optional.</dt><dd>On a Mac without one, hover at the top-center screen edge. External displays work too.</dd></div>
-      <div><dt>Keep it on your Mac.</dt><dd>History is saved locally. The app makes no network requests. Pause capture or clear your history anytime.</dd></div>
+      <div><dt>Your last 20 copies</dt><dd>Keeps your 20 most recent text and link copies. Pin anything you want to keep for longer.</dd></div>
+      <div><dt>Search your history</dt><dd>Type a word to find a copy. Filter by All, Links, or Pinned, and use the arrow keys to choose an item.</dd></div>
+      <div><dt>Paste with a shortcut</dt><dd>Press <kbd>⌘⇧V</kbd> where you’re typing. Choose an item and press Return to paste it. Enable Direct paste in Settings first.</dd></div>
+      <div><dt>Preview the full text</dt><dd>Select an item and press <kbd>Space</kbd> to read it in full. Press Space again to close the preview.</dd></div>
+      <div><dt>Works without a notch</dt><dd>No notch? Move your pointer to the middle of the top edge of your screen. This works on external displays too.</dd></div>
+      <div><dt>Saved on your Mac</dt><dd>Your clipboard history stays on your Mac. The app makes no network requests. You can pause capture or clear your history in Settings.</dd></div>
     </dl>
   </section>
 
   <section class="questions" aria-labelledby="questions-title">
-    <h2 id="questions-title">Before you start.</h2>
+    <h2 id="questions-title">Common questions</h2>
     <details><summary>How do I get started?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p><a href="#install">Follow the three installation steps above.</a> Once PasteReady opens, copy some text or a link with Command (⌘) + C. Hover at the notch to find it again. The app lives in your menu bar. You can also <a href="https://github.com/sartha555k/PasteReady/releases/latest/download/PasteReady.zip">download the ZIP</a> instead of using Terminal.</p></details>
     <details><summary>What permissions does it need?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p>Allow clipboard access if macOS asks. Copying from the notch needs no Accessibility permission. For direct paste with ⌘⇧V, enable Settings → Direct paste → Enable, then allow PasteReady in System Settings → Accessibility. Input Monitoring is not required.</p></details>
-    <details><summary>What is saved?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p>Text and links copied while the app is running: 20 recent unpinned items, plus your pins. Images, files, rich formatting, and individual text items over 100 KB aren’t captured. History is local JSON and is not encrypted. Clipboard items marked concealed or transient are skipped; ordinary text is captured, so pause when needed. <a href="https://github.com/sartha555k/PasteReady/blob/main/docs/usage.md">Read the usage and privacy guide.</a></p></details>
-    <details><summary>How do updates work?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p>Run the same command again to get the latest published release. Your history and pins stay saved. There is no automatic updater. Current releases use ad-hoc signing; Apple notarization is not configured. You can <a href="https://github.com/sartha555k/PasteReady/blob/main/distribution/install.sh">read the installer</a> before running it.</p></details>
+    <details><summary>What is saved?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p>The published release saves your last 20 text and link copies, plus anything you pin. It skips images, file copies, rich formatting, text over 100 KB, and clipboard items marked private by password managers. History is stored on your Mac without encryption. Pause capture in Settings before copying anything you don’t want saved. <a href="https://github.com/sartha555k/PasteReady/blob/main/docs/usage.md">Read the usage and privacy guide.</a></p></details>
+    <details><summary>How do updates work?<svg aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg></summary><p>Run the same command again to get the latest published release. Your history and pins stay saved. There is no automatic updater. Current releases are locally signed and have not been notarized by Apple. You can <a href="https://github.com/sartha555k/PasteReady/blob/main/distribution/install.sh">read the installer</a> before running it.</p></details>
   </section>
 </main>
 <footer>

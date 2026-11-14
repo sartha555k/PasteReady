@@ -4,7 +4,7 @@ description: A quiet web showcase for the native Mac clipboard app.
 colors:
   paper: "#fbfcf9"
   ink: "#242e26"
-  muted: "#626b61"
+  muted: "#4f5a50"
   line: "#dce1d8"
   focus: "#566e4f"
   action-hover: "#3c4a3b"
@@ -190,3 +190,7 @@ The hero explains the product through a concrete action: moving to the top-cente
 At widths above 900px, the hero uses a 1240px maximum grid with a 62px gap and columns of 1fr / 1.08fr. Copy and installation instructions align left. The right-hand 4:3 video has a fine border and 14px radius. At 900px and below, title, introduction, demo, and installation stack in that order. Existing serif typography and pale dotted field remain.
 
 The 12-second silent H.264 video illustrates copying a profile link, opening PasteReady at the notch, selecting the copy icon, and pasting into a form. It composites an actual native app capture over illustrative sample windows. Native controls and English captions remain available. Autoplay is muted and pauses offscreen or when the document is hidden; manual pause persists. Reduced-motion users initially see a static poster and may play manually.
+
+## Website readability refinement
+
+The hero now states the clipboard-history task directly; feature headings use literal names instead of slogans. Keep the established Bodoni/Hanken pairing, layout, pale field, and product media. Muted foreground is #4f5a50. Hero descriptions use 19px on desktop and 18px when stacked; install steps use 16px/1.65 with 600-weight labels and an 18px heading; feature descriptions and FAQ bodies use 17px. Supporting install text and screenshot notes use 14–15px. Expand keyboard symbols with the word Command in beginner install steps. Public copy describes the latest published release, and the production canonical URL is https://pasteready.vercel.app/.
