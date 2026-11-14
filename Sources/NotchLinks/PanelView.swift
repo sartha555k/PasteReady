@@ -143,6 +143,9 @@ struct PanelView: View {
                     NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Pasteboard")!)
                 }.font(.system(size: 11)).buttonStyle(.plain).foregroundStyle(.orange).padding(.bottom, 10)
             }
+            // While paused, an empty or unchanged list looks like a broken app.
+            // Say so where people look for their copies, with a way out.
+            if store.paused { pausedNotice.padding(.bottom, 10) }
             if let notice = store.captureNotice {
                 HStack(alignment: .top, spacing: 8) {
                     Text(notice).font(.system(size: 11)).foregroundStyle(.orange)
@@ -184,9 +187,6 @@ struct PanelView: View {
             Text("\(store.links.count) \(store.links.count == 1 ? "item" : "items")")
                 .font(.system(size: 11, weight: .medium, design: .rounded)).foregroundStyle(PanelPalette.secondary)
                 .padding(.trailing, 5)
-            if store.paused {
-                Image(systemName: "pause.circle.fill").foregroundStyle(.orange).help("Clipboard capture paused")
-            }
             Button { state.settings?() } label: {
                 Image(systemName: "gearshape").font(.system(size: 14)).frame(width: 30, height: 30)
             }.buttonStyle(PanelIconButtonStyle()).foregroundStyle(PanelPalette.secondary).help("Settings")
@@ -345,14 +345,36 @@ struct PanelView: View {
             Button("Delete item", role: .destructive) { store.remove(link) }
         }
     }
+    private var pausedNotice: some View {
+        HStack(spacing: 8) {
+            Label("Paused. New copies aren’t being saved.", systemImage: "pause.circle.fill")
+                .font(.system(size: 11)).foregroundStyle(.orange)
+            Spacer(minLength: 0)
+            Button("Resume") { store.paused = false }
+                .buttonStyle(.plain).font(.system(size: 11, weight: .medium))
+                .padding(.horizontal, 10).padding(.vertical, 4)
+                .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 7))
+                .help("Resume clipboard history")
+                .accessibilityLabel("Resume clipboard history")
+        }
+    }
+    private var emptyMessage: (symbol: String, title: String, detail: String) {
+        if !state.query.isEmpty { return ("magnifyingglass", "No matching items", "Try a different word or part of the address.") }
+        if state.favoritesOnly { return ("pin", "No pinned items", "Pin an item from All to keep it close.") }
+        // Never promise that new copies will be waiting while capture is off.
+        if store.paused { return ("pause.circle", "Clipboard history is paused", "Copies you make now aren’t saved.\nResume to start saving them again.") }
+        if state.linksOnly { return ("doc.on.clipboard", "No links yet", "Copy a web address to find it here.\nYour other copies stay in All.") }
+        return ("doc.on.clipboard", "No clipboard history yet", "Copy text, a link, or an image.\nIt’ll be waiting here when you need it.")
+    }
     private var emptyState: some View {
-        VStack(spacing: 12) {
+        let message = emptyMessage
+        return VStack(spacing: 12) {
             Spacer()
-            Image(systemName: state.query.isEmpty ? (state.favoritesOnly ? "pin" : "doc.on.clipboard") : "magnifyingglass")
+            Image(systemName: message.symbol)
                 .font(.system(size: 29, weight: .light)).foregroundStyle(.white.opacity(0.7))
-            Text(state.query.isEmpty ? (state.favoritesOnly ? "No pinned items" : state.linksOnly ? "No links yet" : "No clipboard history yet") : "No matching items")
+            Text(message.title)
                 .font(.system(size: 16, weight: .medium))
-            Text(state.query.isEmpty ? (state.favoritesOnly ? "Pin an item from All to keep it close." : state.linksOnly ? "Copy a web address to find it here.\nYour other copies stay in All." : "Copy text, a link, or an image.\nIt’ll be waiting here when you need it.") : "Try a different word or part of the address.")
+            Text(message.detail)
                 .font(.system(size: 12)).foregroundStyle(.white.opacity(0.6)).multilineTextAlignment(.center).lineSpacing(4)
             Spacer()
         }.frame(maxWidth: .infinity)
