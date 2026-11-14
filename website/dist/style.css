@@ -1,8 +1,8 @@
 @font-face {
-  font-family: 'Bodoni Moda';
-  src: url('assets/fonts/bodoni-moda.woff2') format('woff2');
+  font-family: 'DM Sans';
+  src: url('assets/fonts/dm-sans.woff2') format('woff2');
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500 600;
   font-display: swap;
 }
 @font-face {
@@ -75,7 +75,7 @@ svg {
   mask-image: linear-gradient(to bottom, #000, #000 45%, transparent 95%);
   pointer-events: none;
 }
-h1, h2 { font-family: 'Bodoni Moda', serif; font-weight: 400; }
+h1, h2 { font-family: 'DM Sans', 'Hanken Grotesk', sans-serif; font-weight: 600; }
 h1 { max-width: 1000px; margin: 0 auto; font-size: clamp(48px, 5.3vw, 72px); line-height: 1.08; letter-spacing: -.025em; text-wrap: balance; }
 .intro { margin: 23px auto 0; color: var(--muted); font-size: 18px; line-height: 1.55; max-width: 44ch; }
 .install { margin: 29px auto 0; max-width: 690px; scroll-margin-top: 30px; }

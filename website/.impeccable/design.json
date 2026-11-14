@@ -166,7 +166,7 @@
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Serif section headings."
+        "purpose": "Readable sans-serif section headings."
       }
     },
     "shadows": [],
@@ -213,6 +213,13 @@
       "body": "17px",
       "supporting": "14\u201315px",
       "copy": "Literal feature names and plain installation steps; production URL pasteready.vercel.app"
+    },
+    "headingFont": {
+      "family": "DM Sans",
+      "weight": 600,
+      "format": "self-hosted WOFF2",
+      "fallback": "Hanken Grotesk, sans-serif",
+      "source": "Google Fonts DM Sans, SIL Open Font License"
     }
   },
   "components": [
@@ -257,10 +264,10 @@
   ],
   "narrative": {
     "northStar": "Quiet product field",
-    "overview": "A pale field, centered serif introduction, and generous whitespace frame the native app. Supporting text and controls stay compact and plain. The faint dotted introduction provides texture without competing with the app captures. A visible three-step installation guide below the copy action explains Command + Space to find Terminal, Command + V to paste, Return to install, and the expected app launch and clipboard permission prompt.",
+    "overview": "A pale field, centered sans-serif introduction, and generous whitespace frame the native app. Supporting text and controls stay compact and plain. The faint dotted introduction provides texture without competing with the app captures. A visible three-step installation guide below the copy action explains Command + Space to find Terminal, Command + V to paste, Return to install, and the expected app launch and clipboard permission prompt.",
     "keyCharacteristics": [
       "Light, subtly green paper with dark green-black text.",
-      "High-contrast serif headings paired with quiet grotesk body text.",
+      "Medium-weight sans-serif headings paired with quiet grotesk body text.",
       "Unframed native app captures and thin rules instead of decorative containers.",
       "Clear interactive states with limited motion and visible keyboard focus."
     ],
@@ -272,7 +279,7 @@
       }
     ],
     "dos": [
-      "Do preserve the continuous pale field and serif/sans role distinction.",
+      "Do preserve the continuous pale field and heading/body role distinction.",
       "Do use thin separators and whitespace before introducing more containers.",
       "Do retain visible keyboard focus and reduced-motion behavior.",
       "Do keep native product imagery unframed and its sample/development provenance clear."
@@ -280,7 +287,7 @@
     "donts": [
       "Don't restore the rejected oversized notch-led composition as this website's baseline.",
       "Don't replace real app captures with generated interface imagery.",
-      "Don't apply this website's serif and pale field to the separately documented native app.",
+      "Don't apply this website's heading font and pale field to the separately documented native app.",
       "Don't imply that development-build screenshots prove a newer published release."
     ]
   }

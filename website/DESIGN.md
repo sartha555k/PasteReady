@@ -15,15 +15,15 @@ colors:
   dot: "#b9c3b2"
 typography:
   display:
-    fontFamily: "Bodoni Moda, serif"
+    fontFamily: "DM Sans, Hanken Grotesk, sans-serif"
     fontSize: "clamp(46px, 4.65vw, 64px)"
-    fontWeight: 400
+    fontWeight: 600
     lineHeight: 1.08
     letterSpacing: "-.025em"
   headline:
-    fontFamily: "Bodoni Moda, serif"
+    fontFamily: "DM Sans, Hanken Grotesk, sans-serif"
     fontSize: "39px"
-    fontWeight: 400
+    fontWeight: 600
     lineHeight: 1.16
     letterSpacing: "-.02em"
   intro:
@@ -83,13 +83,13 @@ components:
 
 **Creative North Star: "Quiet product field"**
 
-A pale field, serif introduction, and generous whitespace frame the native app. The desktop hero pairs installation guidance on the left with a silent workflow video on the right. Supporting text and controls stay compact and plain. The faint dotted introduction provides texture without competing with the app captures.
+A pale field, sans-serif introduction, and generous whitespace frame the native app. The desktop hero pairs installation guidance on the left with a silent workflow video on the right. Supporting text and controls stay compact and plain. The faint dotted introduction provides texture without competing with the app captures.
 
 This document describes only the website boundary. It derives from `dist/style.css`, `dist/index.html`, and `dist/app.js`, with the final desktop capture in `../.impeccable/review/reference-pass/desktop.png` as observational evidence. Native Mac surfaces retain their separate root design system. The user's supplied image establishes restraint, rather than a literal layout to reproduce; the earlier notch-led composition is superseded. The latest surface direction is recorded in the final section of `../.impeccable/surfaces/website-dist-index-html.md`.
 
 **Key Characteristics:**
 - Light, subtly green paper with dark green-black text.
-- High-contrast serif headings paired with quiet grotesk body text.
+- Clear medium-weight sans-serif headings paired with quiet grotesk body text.
 - Unframed native app captures and thin rules instead of decorative containers.
 - Clear interactive states with limited motion and visible keyboard focus.
 
@@ -114,15 +114,15 @@ The action-hover color marks pointer feedback. Success and error colors belong t
 
 ## Typography
 
-**Display Font:** self-hosted Bodoni Moda, serif fallback, normal weight 400.
+**Display Font:** self-hosted DM Sans at weight 600, with Hanken Grotesk and sans-serif fallbacks.
 **Body Font:** self-hosted Hanken Grotesk, sans-serif fallback, available weights 400–600.
 **Command Font:** the platform monospace stack recorded in the frontmatter.
 
-Bodoni Moda's fine contrast gives the introduction its editorial voice. Hanken Grotesk makes navigation, instructions, and native feature descriptions easy to scan. The source fonts use `font-display: swap` and are preloaded by the document.
+DM Sans’s even strokes keep the headline and section headings readable. Hanken Grotesk makes navigation, instructions, and native feature descriptions easy to scan. The source fonts use `font-display: swap` and are preloaded by the document.
 
 ### Hierarchy
-- **Display:** the serif introduction; balanced wrapping, desktop clamp in frontmatter.
-- **Headline:** section headings, using the same serif at a smaller scale.
+- **Display:** the sans-serif introduction; balanced wrapping, desktop clamp in frontmatter.
+- **Headline:** section headings, using the same heading face at a smaller scale.
 - **Intro:** muted supporting text, limited to 54 characters in width.
 - **Body:** feature descriptions; FAQ copy uses a slightly roomier line-height (1.7).
 - **Title:** feature terms with medium weight.
@@ -170,7 +170,7 @@ All interactive elements use a 2px focus outline with 5px offset. Reduced-motion
 ## Do's and Don'ts
 
 ### Do:
-- **Do** preserve the continuous pale field and serif/sans role distinction.
+- **Do** preserve the continuous pale field and heading/body role distinction.
 - **Do** use thin separators and whitespace before introducing more containers.
 - **Do** retain visible keyboard focus and reduced-motion behavior.
 - **Do** keep native product imagery unframed and its sample/development provenance clear.
@@ -178,7 +178,7 @@ All interactive elements use a 2px focus outline with 5px offset. Reduced-motion
 ### Don't:
 - **Don't** restore the rejected oversized notch-led composition as this website's baseline.
 - **Don't** replace real app captures with generated interface imagery.
-- **Don't** apply this website's serif and pale field to the separately documented native app.
+- **Don't** apply this website's heading font and pale field to the separately documented native app.
 - **Don't** imply that development-build screenshots prove a newer published release.
 
 ## Installation guidance
@@ -187,10 +187,14 @@ The hero explains the product through a concrete action: moving to the top-cente
 
 ## Hero workflow video
 
-At widths above 900px, the hero uses a 1240px maximum grid with a 62px gap and columns of 1fr / 1.08fr. Copy and installation instructions align left. The right-hand 4:3 video has a fine border and 14px radius. At 900px and below, title, introduction, demo, and installation stack in that order. Existing serif typography and pale dotted field remain.
+At widths above 900px, the hero uses a 1240px maximum grid with a 62px gap and columns of 1fr / 1.08fr. Copy and installation instructions align left. The right-hand 4:3 video has a fine border and 14px radius. At 900px and below, title, introduction, demo, and installation stack in that order. The heading face follows the current typography correction; the pale dotted field remains.
 
 The 12-second silent H.264 video illustrates copying a profile link, opening PasteReady at the notch, selecting the copy icon, and pasting into a form. It composites an actual native app capture over illustrative sample windows. Native controls and English captions remain available. Autoplay is muted and pauses offscreen or when the document is hidden; manual pause persists. Reduced-motion users initially see a static poster and may play manually.
 
 ## Website readability refinement
 
-The hero now states the clipboard-history task directly; feature headings use literal names instead of slogans. Keep the established Bodoni/Hanken pairing, layout, pale field, and product media. Muted foreground is #4f5a50. Hero descriptions use 19px on desktop and 18px when stacked; install steps use 16px/1.65 with 600-weight labels and an 18px heading; feature descriptions and FAQ bodies use 17px. Supporting install text and screenshot notes use 14–15px. Expand keyboard symbols with the word Command in beginner install steps. Public copy describes the latest published release, and the production canonical URL is https://pasteready.vercel.app/.
+The hero now states the clipboard-history task directly; feature headings use literal names instead of slogans. Keep the established DM Sans/Hanken pairing, layout, pale field, and product media. Muted foreground is #4f5a50. Hero descriptions use 19px on desktop and 18px when stacked; install steps use 16px/1.65 with 600-weight labels and an 18px heading; feature descriptions and FAQ bodies use 17px. Supporting install text and screenshot notes use 14–15px. Expand keyboard symbols with the word Command in beginner install steps. Public copy describes the latest published release, and the production canonical URL is https://pasteready.vercel.app/.
+
+## Heading font correction
+
+User explicitly rejected the thin serif in the hero and feature heading. All display and section headings now use self-hosted DM Sans 600 with Hanken Grotesk as the first fallback. Hanken remains the body face and the install guide’s heading face. The WOFF2 contains weights 500–600, uses font-display: swap, and replaces the Bodoni preload; the unused Bodoni font and license were removed. Copy, layout, media, and install command stay unchanged.

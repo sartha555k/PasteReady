@@ -43,3 +43,6 @@ The user requested a motion video on the right of the hero to show how PasteRead
 
 ## Readability pass
 User reports unreadable text and generic AI-sounding copy. Preserve the approved layout, serif headings, palette, media, and installation command. Replace slogans with literal feature names and a direct clipboard-history explanation. Increase instructions to 16px, main descriptions to 17–19px, and supporting text to 14–15px; darken muted text. Keep claims tied to the published release, not unreleased image support. Verify mobile, desktop, keyboard tabs and installation disclosure before publishing the Vercel site.
+
+## Heading font correction
+User explicitly requests a new readable heading font for the hero and feature heading. DM Sans 600 replaces thin Bodoni for display/section headings; Hanken body and install-guide text remain. Preserve current wording, layout and media. Verify line wrapping at desktop, stacked and narrow widths, self-host and preload the new font, and remove the unused old font.
