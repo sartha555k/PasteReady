@@ -13,6 +13,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
+        UserDefaults.standard.register(defaults: [PanelState.pasteOnClickKey: true])
         store = ClipboardStore()
         controller = NotchController(store: store)
         controller.onSettings = { [weak self] in self?.showSettings() }
@@ -52,7 +53,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func showSettings() {
         if settingsWindow == nil {
             let root = SettingsView(store: store, shortcutAvailable: controller.shortcutAvailable)
-            let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 480, height: 630),
+            let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 480, height: 690),
                 styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
             window.title = "PasteReady"
             window.contentView = NSHostingView(rootView: root)

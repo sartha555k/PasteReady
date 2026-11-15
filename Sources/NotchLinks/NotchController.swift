@@ -47,7 +47,7 @@ final class NotchController {
         self.store = store
         self.pasteHandler = pasteHandler
         self.geometryForScreen = geometryForScreen
-        panel = ClipboardPanel(contentRect: NSRect(x: 0, y: 0, width: 540, height: 570),
+        panel = ClipboardPanel(contentRect: NSRect(x: 0, y: 0, width: PanelMetrics.canvasWidth, height: PanelMetrics.canvasHeight),
             styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
         panel.isOpaque = false
         panel.backgroundColor = .clear
@@ -162,8 +162,8 @@ final class NotchController {
         if state.phase == 2 && !isClosing { close() } else { open(keyboard: true) }
     }
     private var visibleRect: NSRect {
-        return NSRect(x: panel.frame.minX + 30, y: panel.frame.maxY - state.notchHeight - 468,
-            width: 480, height: state.notchHeight + 468)
+        return NSRect(x: panel.frame.minX + PanelMetrics.sidePadding, y: panel.frame.maxY - state.notchHeight - PanelMetrics.bodyHeight,
+            width: PanelMetrics.width, height: state.notchHeight + PanelMetrics.bodyHeight)
     }
     private func refreshHoverTargets() {
         // Trigger geometry depends on the physical display, not Dock/menu-bar
@@ -220,9 +220,18 @@ final class NotchController {
             previousApp = frontmost
         }
         openedByKeyboard = keyboard
-        if keyboard { pasteDestination = pasteHandler.capture() }
-        else { pasteDestination = nil }
+        // Remember where the user was typing before the picker takes focus. A
+        // hover click pastes only into a real text insertion point; otherwise it
+        // copies, so browsing from Finder or a web page never sends Command-V.
+        let pasteOnClick = PanelState.pasteOnClickEnabled
+        pasteDestination = keyboard || pasteOnClick ? pasteHandler.capture() : nil
         state.pastesSelection = keyboard
+        if let destination = pasteDestination, keyboard || destination.selection != nil {
+            state.pasteTarget = destination.app.localizedName ?? "the previous app"
+        } else {
+            state.pasteTarget = nil
+        }
+        state.pasteNeedsAccess = !keyboard && pasteOnClick && pasteDestination != nil && !pasteHandler.canPaste
         outsideSince = nil
         let anchor = pasteDestination?.caret ?? CGRect(origin: NSEvent.mouseLocation, size: .zero)
         let display = screen ?? NSScreen.screens.first(where: { $0.frame.contains(keyboard ? anchor.origin : NSEvent.mouseLocation) }) ?? NSScreen.main!
@@ -307,7 +316,7 @@ final class NotchController {
     private func choose(_ link: ClipboardEntry) {
         guard !isClosing else { return }
         guard store.copy(link) else { return }
-        let destination = openedByKeyboard ? pasteDestination : nil
+        let destination = state.pastes(pasteOnClick: PanelState.pasteOnClickEnabled) ? pasteDestination : nil
         if let destination {
             close(restorePreviousApp: false) { [weak self] in
                 guard let self else { return }

@@ -12,6 +12,8 @@ struct PasteDestination {
 enum PasteOutcome { case sent, needsPermission, unavailable }
 
 protocol PasteHandling: AnyObject {
+    /// Whether macOS currently lets PasteReady send a paste (Accessibility).
+    var canPaste: Bool { get }
     func capture() -> PasteDestination?
     func cancel()
     func paste(to destination: PasteDestination, entry: ClipboardEntry, completion: @escaping (PasteOutcome) -> Void)
@@ -20,6 +22,7 @@ protocol PasteHandling: AnyObject {
 final class PasteService: PasteHandling {
     private var request = 0
     static var isEnabled: Bool { AXIsProcessTrusted() }
+    var canPaste: Bool { Self.isEnabled }
     static func enable() {
         AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary)
         NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
@@ -113,11 +116,11 @@ final class PasteService: PasteHandling {
 // applications that don't expose caret geometry. The whole visible panel fits.
 enum PickerPlacement {
     static func origin(anchor: CGRect, visibleFrame: CGRect) -> CGPoint {
-        let width: CGFloat = 480, height: CGFloat = 468, margin: CGFloat = 10
+        let width = PanelMetrics.width, height = PanelMetrics.bodyHeight, margin: CGFloat = 10
         let x = min(max(anchor.minX, visibleFrame.minX + margin), visibleFrame.maxX - width - margin)
         let below = anchor.minY - 8 - height
         let y = below >= visibleFrame.minY + margin ? below : min(anchor.maxY + 8, visibleFrame.maxY - height - margin)
-        // The hosting canvas has 30pt side padding and 102pt below the surface.
-        return CGPoint(x: x - 30, y: max(visibleFrame.minY + margin, y) - 102)
+        // The hosting canvas has side padding and shadow room below the surface.
+        return CGPoint(x: x - PanelMetrics.sidePadding, y: max(visibleFrame.minY + margin, y) - PanelMetrics.bottomPadding)
     }
 }

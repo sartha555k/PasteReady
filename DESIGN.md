@@ -57,34 +57,34 @@ spacing:
   row-gap: "10pt"
   field-inset-x: "12pt"
   content-gap: "12pt"
-  panel-inset-x: "22pt"
+  panel-inset-x: "14pt"
   settings-inset: "28pt"
 components:
   copy-button:
-    textColor: "rgb(100% 100% 100% / 76%)"
-    width: "28pt"
-    height: "30pt"
+    textColor: "rgb(100% 100% 100% / 72%)"
+    width: "26pt"
+    height: "28pt"
   search-field:
     backgroundColor: "{colors.field-layer}"
     textColor: "{colors.primary-white}"
     rounded: "{rounded.search}"
-    height: "40pt"
-    padding: "0pt 12pt"
+    height: "32pt"
+    padding: "0pt 10pt"
   selected-filter:
     backgroundColor: "{colors.selected-chip-layer}"
     textColor: "{colors.primary-white}"
-    padding: "0pt 13pt"
+    padding: "0pt 10pt"
   selected-row:
     backgroundColor: "{colors.selection-blue}"
     textColor: "{colors.primary-white}"
     rounded: "{rounded.row}"
-    padding: "10pt 9pt"
+    padding: "7pt 7pt"
   hover-row:
     backgroundColor: "{colors.hover-layer}"
     rounded: "{rounded.row}"
   notch-panel:
     backgroundColor: "{colors.notch-black}"
-    width: "480pt"
+    width: "400pt"
 ---
 
 # Design System: PasteReady
@@ -123,7 +123,7 @@ Settings use `.secondary` and `.quaternary`, standard dividers, switches, and de
 ## Typography
 
 **Display Font:** Native SF system font, resolved by SwiftUI `.system`.
-**Body Font:** Native SF system font. The item-count badge uses the rounded system design; other text uses the default system design. No bundled fonts or web font dependencies.
+**Body Font:** Native SF system font, default design. The item count lives in the search placeholder. No bundled fonts or web font dependencies.
 
 **Character:** Compact, familiar, and quiet. Semibold titles establish hierarchy while medium row titles and lighter secondary text support scanning.
 
@@ -140,11 +140,11 @@ Line height is system-resolved, not a custom scale. The locality label is upperc
 
 ## Layout
 
-Measurements are native macOS points, not browser pixels. The borderless NSPanel host is 540pt × 570pt. The open black silhouette is 480pt wide and 468pt plus the measured notch height tall; its 448pt content block sits below the notch height plus 13pt. Horizontal panel inset and content spacing use the frontmatter tokens; the footer has a 19pt bottom inset.
+Measurements are native macOS points, not browser pixels. All picker dimensions come from `PanelMetrics`. The borderless NSPanel host is 460pt × 458pt (30pt side and 102pt bottom shadow margins). The open black silhouette is 400pt wide and 356pt plus the measured notch height tall; its 346pt content block sits below the notch height plus 10pt. Horizontal panel inset and content spacing use the frontmatter tokens; the footer has a 12pt bottom inset.
 
-The main flow is title and count, search, filter strip, scrollable history or centered empty state, then keyboard hints. Rows use 3pt stack spacing, a 36pt square symbol tile, and distinct copy and pin controls. The copy hit area is 28pt × 32pt; pin is 26pt × 32pt. Scroll indicators are hidden. The picker keeps a fixed width and follows the active display; there are no web-style responsive breakpoints. Displays without a notch use a 190pt × 4pt top-center edge trigger, immediate entry detection, and a detached rounded shelf positioned 8pt below the current visible frame’s top. There is no synthetic camera spacer. A narrow hover bridge keeps the shelf open while crossing the menu bar. Such shelves use a 120ms fade, preserving the notch spring on actual notched screens.
+The main flow is search (with the item count as its placeholder) beside the settings gear, the filter strip with the Paste on click switch, scrollable history or centered empty state, then keyboard hints. Rows are 42pt with 2pt stack spacing, a 28pt square symbol tile, and distinct copy and pin controls. The copy hit area is 26pt × 28pt; pin is 24pt × 28pt. Scroll indicators are hidden. The picker keeps a fixed width and follows the active display; there are no web-style responsive breakpoints. Displays without a notch use a 190pt × 4pt top-center edge trigger, immediate entry detection, and a detached rounded shelf positioned 8pt below the current visible frame’s top. There is no synthetic camera spacer. A narrow hover bridge keeps the shelf open while crossing the menu bar. Such shelves use a 120ms fade, preserving the notch spring on actual notched screens.
 
-Settings use a native window content view of 480pt × 630pt, 28pt outer inset, and 22pt section spacing. Text paragraphs wrap intrinsically. No mobile layout is implemented.
+Settings use a native window content view of 480pt × 690pt, 28pt outer inset, and 22pt section spacing. Text paragraphs wrap intrinsically. No mobile layout is implemented.
 
 ## Elevation & Depth
 
@@ -154,7 +154,7 @@ The silhouette uses a structural SwiftUI shadow: black at 32% opacity, radius 24
 
 ## Shapes
 
-The panel is an uneven rounded rectangle: upper corners 9pt, expanded lower corners using the panel-bottom token, collapsed lower corners 15pt. Anticipation adds 26pt to the measured notch width and 11pt to its height. Row, search, and symbol-tile radii are distinct small curves; filters share a 10pt rounded segmented container with 7pt selected segments. The count is unboxed. The settings app icon sits in a 54pt square with the settings-icon radius. Selected rows and focused search use a fine 0.7pt blue edge; idle search uses a faint white edge. Native settings controls retain platform geometry.
+The panel is an uneven rounded rectangle: upper corners 9pt (22pt when detached), expanded lower corners using the panel-bottom token, collapsed lower corners 15pt. Anticipation adds 26pt to the measured notch width and 11pt to its height. Row, search, and symbol-tile radii are distinct small curves; filters share a 10pt rounded segmented container with 7pt selected segments. The count is unboxed. The settings app icon sits in a 54pt square with the settings-icon radius. Selected rows and focused search use a fine 0.7pt blue edge; idle search uses a faint white edge. Native settings controls retain platform geometry.
 
 ## Components
 
@@ -164,7 +164,7 @@ Plain, compact symbol controls in the picker; native buttons in settings. The vi
 
 ### Chips
 
-All, Links, and Pinned share a compact segmented container with 11.5pt medium labels. Selected state uses the selected-filter token; inactive labels use Secondary White. The item count uses unboxed rounded 11pt medium type. Keyboard guidance uses small 17pt-high keycaps with 9pt labels and 10.5pt descriptions.
+All, Links, and Pinned share a compact segmented container with 11pt medium labels in 20pt segments. Selected state uses the selected-filter token; inactive labels use Secondary White. Paste on click is a 22pt chip with a text-cursor symbol and a small switch; it shows only for hover-opened pickers, because the shortcut always pastes. Keyboard guidance uses small 17pt-high keycaps with 9pt labels and 10.5pt descriptions.
 
 ### Cards / Containers
 
@@ -176,7 +176,7 @@ The plain search field uses the search-field token with a magnifier and a condit
 
 ### Navigation
 
-Command–Shift–V opens the picker, Up/Down change the selected row; plain Left/Right switch All, Links, and Pinned without wrapping or clearing search, Return copies the selection, and Escape closes. Hover opens on the first sampled entry regardless of pointer speed, including the exact top screen border. Once opening begins it takes keyboard focus without entering search editing; leaving the region for 0.24s closes a hover-opened panel unless search has focus. Copying a chosen row closes the picker and restores the previous app; the separate copy icon confirms in the footer while leaving the picker open. For hover selection, pasting remains a manual Command–V action. Command–Shift–V instead opens a detached, fully rounded picker near the captured caret (pointer fallback) with Return labeled paste and a paste icon per row. Shortcut selection restores the captured target and requests a single paste, subject to Accessibility access; Escape cancels.
+Command–Shift–V opens the picker, Up/Down change the selected row; plain Left/Right switch All, Links, and Pinned without wrapping or clearing search, Return copies the selection, and Escape closes. Hover opens on the first sampled entry regardless of pointer speed, including the exact top screen border. Once opening begins it takes keyboard focus without entering search editing; leaving the region for 0.24s closes a hover-opened panel unless search has focus. Choosing a row (click or Return) is the primary action. A hover-opened picker remembers the app and text insertion point that had focus; with Paste on click on (the default) and Accessibility granted, choosing pastes there, and the footer reads “Paste into <app>”. With no insertion point, no Accessibility access, or the switch off, choosing copies, closes the picker and restores the previous app. The per-row copy icon always copies only and confirms in the footer while leaving the picker open. Command–Shift–V opens a detached, fully rounded picker near the captured caret (pointer fallback) and always pastes on Return. Shortcut selection restores the captured target and requests a single paste, subject to Accessibility access; Escape cancels.
 
 ### Notch expansion
 
@@ -188,11 +188,11 @@ Opening uses a single continuous spring (response 0.28s, damping fraction 0.92) 
 - **Do** use native system fonts, SF Symbols, and platform settings controls.
 - **Do** preserve a visible copy icon on every row, including unselected rows.
 - **Do** show selected history rows in the extracted blue and hover through a quiet tonal layer.
-- **Do** preserve all captured text and links as local history and keep hover selection copy-only; shortcut selection pastes into the captured app.
+- **Do** preserve all captured text and links as local history; hover choices paste only into a remembered text insertion point when Paste on click is on, and copy otherwise; shortcut selection pastes into the captured app.
 - **Do** use the alpha-only opening and closing path when Reduce Motion is enabled.
 
 ### Don't:
-- **Don't** paste after hover-only selection, cancellation, or a changed destination.
+- **Don't** paste after cancellation, into a changed destination, or from hover when no text insertion point was focused.
 - **Don't** replace the black notch surface with remote imagery or fetched favicons.
 - **Don't** invent fixed colors for native semantic settings materials.
 - **Don't** treat illustrative renders or browser component previews as an approved native comp.
@@ -202,3 +202,7 @@ Preview uses the existing list region, keeping the list mounted underneath to pr
 ## Premium refinement — November 2026
 
 The `feat/premium-ui` pass preserves the black notch silhouette and interaction timings. The header pairs a 34pt symbol tile with a 19pt PasteReady title and secondary history label. Muted navy selection, a fine blue edge, aligned row actions, grouped filters, and reusable keycaps provide hierarchy without extra elevation. Rows retain the 52pt height and 55pt navigation stride. Settings groups its three preferences and aligns switches on the trailing edge. Native renders in `.impeccable/review/premium/` cover populated, preview, empty, search, shortcut, no-notch, and settings states.
+
+## Compact picker and paste on click — November 2026
+
+The `feat/paste-on-click-compact-panel` pass shrinks the picker from 480pt × 468pt to 400pt × 356pt (about 35% less area) while showing more rows: 42pt rows with a 44pt navigation stride. The 34pt symbol tile and PasteReady title header were removed; search leads, with the item count as its placeholder and the gear beside it. The “On this Mac” label moved out of the picker; Settings still explains local storage. Hover-opened pickers gain a Paste on click switch (default on, also in Settings) and a footer hint naming where Return or a click will paste. All existing actions — search, filters, preview, pin, rename, delete, copy-only, keyboard navigation — are unchanged.

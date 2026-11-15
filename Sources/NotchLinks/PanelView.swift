@@ -17,6 +17,15 @@ final class PanelState: ObservableObject {
     @Published var scrollSession = UUID()
     @Published var previewID: UUID?
     @Published var navigatingItems = false
+    /// App that a choice pastes into. Hover sets it only when that app had a
+    /// text insertion point; the shortcut always targets the captured app.
+    @Published var pasteTarget: String?
+    /// Paste on click is on, but Accessibility access is missing.
+    @Published var pasteNeedsAccess = false
+    static let pasteOnClickKey = "pasteOnClick"
+    static var pasteOnClickEnabled: Bool { UserDefaults.standard.object(forKey: pasteOnClickKey) as? Bool ?? true }
+    /// Whether clicking a row or pressing Return pastes rather than only copies.
+    func pastes(pasteOnClick: Bool) -> Bool { pastesSelection || (pasteOnClick && pasteTarget != nil) }
     private var searchFocusBeforePreview = false
     var choose: ((ClipboardEntry) -> Void)?
     var dismiss: (() -> Void)?
@@ -71,12 +80,15 @@ struct PanelView: View {
     @State private var hoveredID: UUID?
     @State private var editing: ClipboardEntry?
     @State private var editedTitle = ""
+    @AppStorage(PanelState.pasteOnClickKey) private var pasteOnClick = true
 
     private var items: [ClipboardEntry] { state.filtered(store.sorted) }
     private var previewItem: ClipboardEntry? { items.first { $0.id == state.previewID } }
     private var expanded: Bool { state.phase == 2 }
-    private var shapeWidth: CGFloat { expanded ? 480 : state.notchWidth }
-    private var shapeHeight: CGFloat { expanded ? 468 + state.notchHeight : state.notchHeight }
+    private var pastes: Bool { state.pastes(pasteOnClick: pasteOnClick) }
+    private var surfaceHeight: CGFloat { PanelMetrics.bodyHeight + state.notchHeight }
+    private var shapeWidth: CGFloat { expanded ? PanelMetrics.width : state.notchWidth }
+    private var shapeHeight: CGFloat { expanded ? surfaceHeight : state.notchHeight }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -88,22 +100,22 @@ struct PanelView: View {
                 // Only the silhouette and its mask resize, avoiding list construction
                 // and repeated text layout on the opening animation's critical path.
                 VStack(spacing: 0) {
-                    Color.clear.frame(height: state.notchHeight + 13)
+                    Color.clear.frame(height: state.notchHeight + 10)
                     content.opacity(expanded ? 1 : 0)
                         .offset(y: expanded || reduceMotion ? 0 : -3)
                     Spacer(minLength: 0)
                 }
-                .frame(width: 480, height: 468 + state.notchHeight, alignment: .top)
+                .frame(width: PanelMetrics.width, height: surfaceHeight, alignment: .top)
                 .mask(alignment: .top) {
                     silhouette.frame(width: shapeWidth, height: shapeHeight)
                 }
                 .allowsHitTesting(expanded)
                 .accessibilityHidden(!expanded)
             }
-            .frame(width: 480, height: 468 + state.notchHeight, alignment: .top)
+            .frame(width: PanelMetrics.width, height: surfaceHeight, alignment: .top)
             Spacer(minLength: 0)
         }
-        .frame(width: 540, height: 570, alignment: .top)
+        .frame(width: PanelMetrics.canvasWidth, height: PanelMetrics.canvasHeight, alignment: .top)
         .preferredColorScheme(.dark)
         .onChange(of: state.focusSearch) { _, value in searchFocused = value }
         .onChange(of: searchFocused) { _, value in state.focusSearch = value }
@@ -126,15 +138,14 @@ struct PanelView: View {
     }
 
     private var silhouette: UnevenRoundedRectangle {
-        UnevenRoundedRectangle(topLeadingRadius: state.detached ? 28 : 9, bottomLeadingRadius: expanded ? 28 : 15,
-            bottomTrailingRadius: expanded ? 28 : 15, topTrailingRadius: state.detached ? 28 : 9)
+        UnevenRoundedRectangle(topLeadingRadius: state.detached ? 22 : 9, bottomLeadingRadius: expanded ? 22 : 15,
+            bottomTrailingRadius: expanded ? 22 : 15, topTrailingRadius: state.detached ? 22 : 9)
     }
 
     private var content: some View {
         VStack(spacing: 0) {
-            header.padding(.bottom, 16)
-            searchField.padding(.bottom, 12)
-            filterBar.padding(.bottom, 12)
+            header.padding(.bottom, 8)
+            filterBar.padding(.bottom, 8)
             if let error = store.storageError {
                 Label(error, systemImage: "exclamationmark.triangle").font(.system(size: 11))
                     .foregroundStyle(.orange).padding(.bottom, 10)
@@ -159,8 +170,8 @@ struct PanelView: View {
                 else {
                     ClipboardScrollView(ids: items.map(\.id), selectedID: state.selectedID,
                         session: state.scrollSession, reduceMotion: reduceMotion) {
-                        VStack(spacing: 3) {
-                            ForEach(items) { link in row(link).frame(height: 52) }
+                        VStack(spacing: PanelMetrics.rowSpacing) {
+                            ForEach(items) { link in row(link).frame(height: PanelMetrics.rowHeight) }
                         }
                     }
                     .opacity(previewItem == nil ? 1 : 0)
@@ -168,76 +179,94 @@ struct PanelView: View {
                     .accessibilityHidden(previewItem != nil)
                 }
                 if let link = previewItem { fullPreview(link) }
-            }.frame(maxHeight: .infinity).padding(.bottom, 12)
+            }.frame(maxHeight: .infinity).padding(.bottom, 8)
             footer
         }
-        .padding(.horizontal, 22).padding(.bottom, 18)
-        .frame(width: 480, height: 448)
+        .padding(.horizontal, 14).padding(.bottom, 12)
+        .frame(width: PanelMetrics.width, height: PanelMetrics.bodyHeight - 10)
     }
+    /// Search leads: the app's name and item count fold into the field itself.
     private var header: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "doc.on.clipboard").font(.system(size: 16, weight: .medium))
-                .foregroundStyle(.white.opacity(0.85)).frame(width: 34, height: 34)
-                .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
-            VStack(alignment: .leading, spacing: 3) {
-                Text("PasteReady").font(.system(size: 19, weight: .semibold)).tracking(-0.35)
-                Text("Clipboard history").font(.system(size: 10.5)).foregroundStyle(PanelPalette.secondary)
-            }
-            Spacer()
-            Text("\(store.links.count) \(store.links.count == 1 ? "item" : "items")")
-                .font(.system(size: 11, weight: .medium, design: .rounded)).foregroundStyle(PanelPalette.secondary)
-                .padding(.trailing, 5)
+        HStack(spacing: 6) {
+            searchField
             Button { state.settings?() } label: {
-                Image(systemName: "gearshape").font(.system(size: 14)).frame(width: 30, height: 30)
-            }.buttonStyle(PanelIconButtonStyle()).foregroundStyle(PanelPalette.secondary).help("Settings")
+                Image(systemName: "gearshape").font(.system(size: 13)).frame(width: 30, height: 32)
+            }.buttonStyle(PanelIconButtonStyle()).foregroundStyle(PanelPalette.secondary).help("PasteReady settings")
                 .accessibilityLabel("Open settings")
         }
     }
     private var searchField: some View {
-        HStack(spacing: 9) {
-            Image(systemName: "magnifyingglass").font(.system(size: 13, weight: .medium))
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass").font(.system(size: 12, weight: .medium))
                 .foregroundStyle(searchFocused ? PanelPalette.accent : PanelPalette.secondary)
-            TextField("Search your clipboard", text: $state.query)
-                .textFieldStyle(.plain).font(.system(size: 13)).focused($searchFocused)
+            TextField(store.links.isEmpty ? "Search clipboard" : "Search \(store.links.count) \(store.links.count == 1 ? "item" : "items")", text: $state.query)
+                .textFieldStyle(.plain).font(.system(size: 12.5)).focused($searchFocused)
                 .onSubmit { chooseSelected() }.accessibilityLabel("Search clipboard")
             if !state.query.isEmpty {
                 Button { state.query = "" } label: {
-                    Image(systemName: "xmark.circle.fill").frame(width: 24, height: 24)
+                    Image(systemName: "xmark.circle.fill").frame(width: 22, height: 22)
                 }.buttonStyle(PanelIconButtonStyle()).foregroundStyle(PanelPalette.secondary).accessibilityLabel("Clear search")
             } else if !searchFocused { PanelKeycap(key: "⌘⇧V") }
         }
-        .padding(.horizontal, 12).frame(height: 40)
-        .background(PanelPalette.field, in: RoundedRectangle(cornerRadius: 11))
+        .padding(.horizontal, 10).frame(height: 32)
+        .background(PanelPalette.field, in: RoundedRectangle(cornerRadius: 9))
         .overlay {
-            RoundedRectangle(cornerRadius: 11).strokeBorder(searchFocused ? PanelPalette.selectionEdge : .white.opacity(0.075), lineWidth: 0.7)
+            RoundedRectangle(cornerRadius: 9).strokeBorder(searchFocused ? PanelPalette.selectionEdge : .white.opacity(0.075), lineWidth: 0.7)
         }
     }
     private var filterBar: some View {
         HStack(spacing: 5) {
-            HStack(spacing: 2) {
+            HStack(spacing: 1) {
                 filterButton("All", favorites: false)
                 Button { state.favoritesOnly = false; state.linksOnly.toggle() } label: {
                     filterLabel("Links", selected: state.linksOnly)
                 }.buttonStyle(.plain).accessibilityAddTraits(state.linksOnly ? .isSelected : [])
                 filterButton("Pinned", favorites: true)
-            }.padding(3).background(.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 10))
-            Spacer()
-            Image(systemName: "internaldrive").font(.system(size: 10))
-            Text("On this Mac").font(.system(size: 10.5))
+            }.padding(2).background(.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 8))
+            Spacer(minLength: 6)
+            // The shortcut always pastes; the toggle governs hover clicks.
+            if !state.pastesSelection { pasteToggle }
         }.foregroundStyle(PanelPalette.hint)
     }
+    private var pasteToggle: some View {
+        Button { pasteOnClick.toggle() } label: {
+            HStack(spacing: 5) {
+                Image(systemName: "text.cursor").font(.system(size: 10, weight: .semibold))
+                Text("Paste on click").font(.system(size: 10.5, weight: .medium))
+                Capsule().fill(pasteOnClick ? PanelPalette.accent : .white.opacity(0.18))
+                    .frame(width: 20, height: 12)
+                    .overlay(alignment: pasteOnClick ? .trailing : .leading) {
+                        Circle().fill(.white).frame(width: 9, height: 9).padding(.horizontal, 1.5)
+                    }
+            }
+            .foregroundStyle(pasteOnClick ? .white.opacity(0.85) : PanelPalette.hint)
+            .padding(.horizontal, 8).frame(height: 22)
+            .background(.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 7))
+        }
+        .buttonStyle(.plain)
+        .help(pasteOnClick ? "Clicking an item pastes it where your cursor was. Click to copy only." : "Clicking an item copies it. Click to paste where your cursor was.")
+        .accessibilityLabel("Paste on click")
+        .accessibilityValue(pasteOnClick ? "On" : "Off")
+        .accessibilityAddTraits(.isToggle)
+    }
+    /// Footer always says what Return or a click will do, and where.
+    private var actionHint: String {
+        if pastes { return "Paste into \(state.pasteTarget ?? "your app")" }
+        if !state.pastesSelection && pasteOnClick && state.pasteNeedsAccess { return "Copy · allow Accessibility to paste" }
+        return "Copy"
+    }
     private var footer: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 9) {
             if let message = state.message {
-                Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                Image(systemName: "checkmark.circle.fill").font(.system(size: 11)).foregroundStyle(.green)
                 Text(message).font(.system(size: 10.5)).foregroundStyle(PanelPalette.secondary)
             } else {
-                PanelShortcut(key: "arrow.up.arrow.down", title: "Navigate", symbol: true)
-                PanelShortcut(key: "return", title: state.pastesSelection ? "Paste" : "Copy", symbol: true)
+                PanelKeycap(key: "arrow.up.arrow.down", symbol: true)
+                PanelShortcut(key: "return", title: actionHint, symbol: true)
             }
             Spacer(minLength: 4)
             Button { state.togglePreview(links: store.sorted) } label: {
-                PanelShortcut(key: "Space", title: state.previewID == nil ? "Preview" : "Close preview")
+                PanelShortcut(key: "Space", title: state.previewID == nil ? "Preview" : "Close")
             }.buttonStyle(.plain).disabled(items.isEmpty)
                 .help(state.previewID == nil ? "Show full preview" : "Close full preview")
                 .accessibilityLabel(state.previewID == nil ? "Show full preview" : "Close full preview")
@@ -250,7 +279,7 @@ struct PanelView: View {
                 Image(systemName: link.symbol).foregroundStyle(PanelPalette.accent)
                 Text(link.title).font(.system(size: 13, weight: .medium)).lineLimit(2)
                 Spacer(minLength: 5)
-                Button(state.pastesSelection ? "Paste" : "Copy") { state.choose?(link) }
+                Button(pastes ? "Paste" : "Copy") { state.choose?(link) }
                     .buttonStyle(.plain).font(.system(size: 12, weight: .medium))
                     .padding(.horizontal, 11).padding(.vertical, 6)
                     .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
@@ -285,55 +314,56 @@ struct PanelView: View {
         }.buttonStyle(.plain).accessibilityAddTraits(state.favoritesOnly == favorites && !state.linksOnly ? .isSelected : [])
     }
     private func filterLabel(_ title: String, selected: Bool) -> some View {
-        Text(title).font(.system(size: 11.5, weight: .medium))
+        Text(title).font(.system(size: 11, weight: .medium))
             .foregroundStyle(selected ? .white : PanelPalette.secondary)
-            .padding(.horizontal, 13).frame(height: 25)
-            .background(.white.opacity(selected ? 0.11 : 0), in: RoundedRectangle(cornerRadius: 7))
+            .padding(.horizontal, 10).frame(height: 20)
+            .background(.white.opacity(selected ? 0.11 : 0), in: RoundedRectangle(cornerRadius: 6))
     }
     private func row(_ link: ClipboardEntry) -> some View {
         let selected = state.selectedID == link.id
-        return HStack(spacing: 10) {
+        return HStack(spacing: 4) {
+            // The row is the primary action: paste when a target is ready, else copy.
             Button { state.choose?(link) } label: {
-                HStack(spacing: 11) {
+                HStack(spacing: 9) {
                     Group {
                         if link.isImage, let thumbnail = store.imagePreview(link) {
                             Image(nsImage: thumbnail).resizable().scaledToFit().padding(2)
                         } else {
-                            Image(systemName: link.symbol).font(.system(size: 15, weight: .medium))
+                            Image(systemName: link.symbol).font(.system(size: 12.5, weight: .medium))
                                 .foregroundStyle(selected ? PanelPalette.accent : .white.opacity(0.72))
                         }
                     }
-                    .frame(width: 32, height: 32)
-                    .background(selected ? PanelPalette.accent.opacity(0.09) : .white.opacity(0.045), in: RoundedRectangle(cornerRadius: 9))
-                    .clipShape(RoundedRectangle(cornerRadius: 9))
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(link.title).font(.system(size: 13, weight: .medium)).lineLimit(1)
-                        Text(link.preview).font(.system(size: 10.5)).foregroundStyle(.white.opacity(selected ? 0.72 : 0.58))
+                    .frame(width: 28, height: 28)
+                    .background(selected ? PanelPalette.accent.opacity(0.09) : .white.opacity(0.045), in: RoundedRectangle(cornerRadius: 7))
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(link.title).font(.system(size: 12.5, weight: .medium)).lineLimit(1)
+                        Text(link.preview).font(.system(size: 10)).foregroundStyle(.white.opacity(selected ? 0.72 : 0.56))
                             .lineLimit(1).truncationMode(.middle)
                     }
                     Spacer(minLength: 0)
                 }.contentShape(Rectangle())
-            }.buttonStyle(.plain).accessibilityLabel("\(link.title), \(link.isImage ? link.preview : link.content)")
-            Button {
-                if state.pastesSelection { state.choose?(link) }
-                else { if store.copy(link) { state.message = "Copied to clipboard" } }
-            } label: {
-                Image(systemName: state.pastesSelection ? "arrow.turn.down.left" : "doc.on.doc")
-                    .font(.system(size: 12)).frame(width: 28, height: 30).foregroundStyle(.white.opacity(0.76))
-            }.buttonStyle(PanelIconButtonStyle()).help(state.pastesSelection ? "Paste item" : "Copy item")
-                .accessibilityLabel("\(state.pastesSelection ? "Paste" : "Copy") \(link.title)")
+            }.buttonStyle(.plain).help(pastes ? "Paste into \(state.pasteTarget ?? "your app")" : "Copy")
+                .accessibilityLabel("\(link.title), \(link.isImage ? link.preview : link.content)")
+                .accessibilityHint(pastes ? "Pastes into \(state.pasteTarget ?? "your app")" : "Copies to the clipboard")
+            // Always copy-only, so there's a way to copy without pasting.
+            Button { if store.copy(link) { state.message = "Copied to clipboard" } } label: {
+                Image(systemName: "doc.on.doc")
+                    .font(.system(size: 11)).frame(width: 26, height: 28).foregroundStyle(.white.opacity(0.72))
+            }.buttonStyle(PanelIconButtonStyle()).help("Copy only")
+                .accessibilityLabel("Copy \(link.title)")
             Button { store.togglePin(link) } label: {
-                Image(systemName: link.pinned ? "pin.fill" : "pin").font(.system(size: 11))
-                    .frame(width: 26, height: 30)
+                Image(systemName: link.pinned ? "pin.fill" : "pin").font(.system(size: 10))
+                    .frame(width: 24, height: 28)
                     .foregroundStyle(.white.opacity(link.pinned ? 0.72 : hoveredID == link.id || selected ? 0.55 : 0))
             }.buttonStyle(PanelIconButtonStyle()).help(link.pinned ? "Unpin item" : "Pin item")
                 .accessibilityLabel(link.pinned ? "Unpin \(link.title)" : "Pin \(link.title)")
         }
-        .padding(.horizontal, 9).padding(.vertical, 10)
+        .padding(.horizontal, 7).padding(.vertical, 7)
         .background(selected ? PanelPalette.selection : .white.opacity(hoveredID == link.id ? 0.045 : 0),
-            in: RoundedRectangle(cornerRadius: 12))
+            in: RoundedRectangle(cornerRadius: 10))
         .overlay {
-            RoundedRectangle(cornerRadius: 12).strokeBorder(selected ? PanelPalette.selectionEdge : .clear, lineWidth: 0.7)
+            RoundedRectangle(cornerRadius: 10).strokeBorder(selected ? PanelPalette.selectionEdge : .clear, lineWidth: 0.7)
                 .allowsHitTesting(false)
         }
         .onHover { over in hoveredID = over ? link.id : nil }
@@ -368,14 +398,14 @@ struct PanelView: View {
     }
     private var emptyState: some View {
         let message = emptyMessage
-        return VStack(spacing: 12) {
+        return VStack(spacing: 9) {
             Spacer()
             Image(systemName: message.symbol)
-                .font(.system(size: 29, weight: .light)).foregroundStyle(.white.opacity(0.7))
+                .font(.system(size: 24, weight: .light)).foregroundStyle(.white.opacity(0.7))
             Text(message.title)
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 14.5, weight: .medium))
             Text(message.detail)
-                .font(.system(size: 12)).foregroundStyle(.white.opacity(0.6)).multilineTextAlignment(.center).lineSpacing(4)
+                .font(.system(size: 11.5)).foregroundStyle(.white.opacity(0.6)).multilineTextAlignment(.center).lineSpacing(3)
             Spacer()
         }.frame(maxWidth: .infinity)
     }

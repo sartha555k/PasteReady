@@ -6,8 +6,8 @@ Extract **build/PasteReady.zip**, move **PasteReady.app** to Applications, and o
 
 1. Copy text, a web link, or an image anywhere with Command–C.
 2. Hover over your notch, or press **Command–Shift–V**.
-3. Click the **copy icon** beside an item. The picker stays open and confirms the copy. Clicking the row or pressing Return also copies and closes the picker.
-4. Return to your form and press **Command–V**.
+3. Click the item, or press Return. With **Paste on click** on (the default), it's pasted straight into the text field you were typing in, and the footer tells you where (“Paste into Notes”). If no text field was active, it's copied instead.
+4. To copy without pasting, click the **copy icon** beside an item; the picker stays open and confirms the copy. Turn off Paste on click in the picker or in Settings to make every click copy only.
 
 For direct paste, first put your cursor in a text field and press **Command–Shift–V**. Search or navigate with arrow keys, then press Return or click a row or its paste icon. The picker closes, restores the captured app and text selection, and sends one Command–V to that app. It waits for the app to regain focus and for shortcut modifiers to be released. Escape cancels without pasting. If permission is missing or the original destination is no longer available, the item is still copied and the app explains how to paste manually.
 
@@ -24,7 +24,7 @@ On a display without a notch, hover at the center of the top screen edge. The 19
 
 ## Clipboard and privacy
 
-History is captured while the app is running. It cannot recover things copied before launch. macOS may ask for clipboard access: allow it for continuous capture. Manage it in **System Settings → Privacy & Security → Paste from Other Apps** when available. Copy-only notch use needs no Accessibility permission. **Direct paste requires Accessibility access for PasteReady**. Enable it from the app’s Settings → Direct paste → Enable, then switch on PasteReady under System Settings → Privacy & Security → Accessibility. Input Monitoring is not required.
+History is captured while the app is running. It cannot recover things copied before launch. macOS may ask for clipboard access: allow it for continuous capture. Manage it in **System Settings → Privacy & Security → Paste from Other Apps** when available. Copy-only notch use needs no Accessibility permission. **Direct paste, from the notch or Command–Shift–V, requires Accessibility access for PasteReady**; without it, Paste on click copies and the footer says so. Enable it from the app’s Settings → Direct paste → Enable, then switch on PasteReady under System Settings → Privacy & Security → Accessibility. Input Monitoring is not required.
 
 Text, URLs, and copied PNG/TIFF images are supported. Images appear as thumbnails in All and Pinned; Space opens a larger aspect-fit preview. Image originals are copied back in their stored format, preserving transparency, and can be pasted into apps that accept images. Each image must be at most 20 MB, 40 megapixels, and 16,384 pixels per side. File copies, rich text formatting, empty text, and individual text items larger than 100 KB are excluded. Images are stored locally in an images folder alongside history.json; removing an image or trimming history removes its attachment after the history is saved. Password-manager entries marked concealed or transient are skipped. Ordinary text is otherwise captured, so use Pause clipboard history when needed. Pause from Settings or the menu bar icon's menu. While paused, the menu bar icon changes to a pause symbol and the picker says new copies aren't being saved, with a **Resume** button. Pausing lasts until you resume or quit the app.
 

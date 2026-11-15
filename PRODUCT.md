@@ -6,7 +6,7 @@
 macOS (native AppKit and SwiftUI).
 
 ## Stack
-Swift + SwiftUI, packaged as a menu bar application using Swift Package Manager and a local build script. Native implementation as proposed; user confirmed text-plus-link capture. Shortcut selection now pastes automatically; notch hover remains copy-only.
+Swift + SwiftUI, packaged as a menu bar application using Swift Package Manager and a local build script. Native implementation as proposed; user confirmed text-plus-link capture. Shortcut selection pastes automatically. Notch hover choices paste into the remembered text field when Paste on click is on (default), and copy otherwise.
 
 ## Users
 The Mac owner filling applications and forms, repeatedly reusing LinkedIn, Drive and other links.
