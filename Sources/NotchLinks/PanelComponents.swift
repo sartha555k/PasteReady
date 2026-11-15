@@ -1,5 +1,21 @@
 import SwiftUI
 
+/// One source of truth for the picker's size, shared by layout, hover hit
+/// testing, caret placement and keyboard scrolling.
+enum PanelMetrics {
+    /// Visible surface below the notch (the notch height is added on top).
+    static let width: CGFloat = 400
+    static let bodyHeight: CGFloat = 356
+    /// Transparent margin around the surface for the drop shadow.
+    static let sidePadding: CGFloat = 30
+    static let bottomPadding: CGFloat = 102
+    static var canvasWidth: CGFloat { width + sidePadding * 2 }
+    static var canvasHeight: CGFloat { bodyHeight + bottomPadding }
+    static let rowHeight: CGFloat = 42
+    static let rowSpacing: CGFloat = 2
+    static var rowPitch: CGFloat { rowHeight + rowSpacing }
+}
+
 enum PanelPalette {
     static let secondary = Color.white.opacity(0.64)
     static let hint = Color.white.opacity(0.54)

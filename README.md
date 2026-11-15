@@ -9,7 +9,7 @@ A native Mac clipboard history that opens from your notch. Reuse links and text 
 *Product preview with sample clipboard content.*
 
 - **20 recent copies**, plus pinned favorites.
-- **Hover to copy again**, or press **⌘⇧V** to choose and paste at your cursor.
+- **Hover the notch and click** to paste right where you were typing, or press **⌘⇧V** to search and paste. Switch off *Paste on click* to copy only.
 - **Search, arrow keys, and Space preview** to find exactly what you need.
 - **Stored on your Mac.** No network requests. Works with or without a notch.
 

@@ -3,7 +3,17 @@ import AppKit
 private final class TestPasteHandler: PasteHandling {
     var pasted: [PasteDestination] = []
     var entries: [ClipboardEntry] = []
-    func capture() -> PasteDestination? { PasteDestination(app: .current) }
+    var canPaste = true
+    /// Hover pastes only into a text insertion point; tests opt in per case.
+    var withTextSelection = false
+    func capture() -> PasteDestination? {
+        var destination = PasteDestination(app: .current)
+        if withTextSelection {
+            var range = CFRange(location: 0, length: 0)
+            destination.selection = AXValueCreate(.cfRange, &range)
+        }
+        return destination
+    }
     func cancel() {}
     func paste(to destination: PasteDestination, entry: ClipboardEntry, completion: @escaping (PasteOutcome) -> Void) {
         pasted.append(destination)
@@ -37,6 +47,8 @@ struct InteractionTests {
         pump(for: 0.1)
         let originalResponder = inputWindow.firstResponder
         let pasteHandler = TestPasteHandler()
+        UserDefaults.standard.set(true, forKey: PanelState.pasteOnClickKey)
+        defer { UserDefaults.standard.removeObject(forKey: PanelState.pasteOnClickKey) }
         let controller = NotchController(store: store, pasteHandler: pasteHandler)
 
         controller.open(keyboard: false)
@@ -57,7 +69,8 @@ struct InteractionTests {
         precondition(!controller.hasKeyboardFocus, "Closing must release keyboard focus")
         precondition(inputWindow.firstResponder === originalResponder, "The form must retain its original text responder")
         print("PASS: Return copies to a temporary pasteboard and releases focus")
-        precondition(pasteHandler.pasted.isEmpty, "Hover selection must stay copy-only")
+        precondition(pasteHandler.pasted.isEmpty, "Hover without a text insertion point must stay copy-only")
+        precondition(controller.state.pasteTarget == nil)
 
         controller.open(keyboard: true)
         pump(for: 0.08)
@@ -80,11 +93,39 @@ struct InteractionTests {
         precondition(inputWindow.firstResponder === originalResponder)
         print("PASS: shortcut Return copies selected text and requests paste into the captured destination")
 
+        // Paste on click: hover remembers the text field the user was typing in.
+        pasteHandler.withTextSelection = true
+        controller.open(keyboard: false)
+        pump(for: 0.04)
+        precondition(controller.state.pasteTarget != nil && !controller.state.pastesSelection,
+            "Hover over a text insertion point must offer paste on click")
+        key(36, characters: "\r")
+        pump(for: 0.2)
+        precondition(pasteHandler.pasted.count == 2, "Hover choice must paste into the remembered field when paste on click is on")
+        precondition(pasteboard.string(forType: .string) == sorted[0].content)
+        UserDefaults.standard.set(false, forKey: PanelState.pasteOnClickKey)
+        controller.open(keyboard: false)
+        pump(for: 0.04)
+        key(125, characters: "\u{F701}")
+        key(36, characters: "\r")
+        pump(for: 0.2)
+        precondition(pasteHandler.pasted.count == 2, "With paste on click off, a hover choice must only copy")
+        precondition(pasteboard.string(forType: .string) == sorted[1].content)
+        controller.open(keyboard: true)
+        pump(for: 0.08)
+        key(36, characters: "\r")
+        pump(for: 0.2)
+        precondition(pasteHandler.pasted.count == 3, "The paste on click toggle must not change the shortcut, which always pastes")
+        UserDefaults.standard.set(true, forKey: PanelState.pasteOnClickKey)
+        pasteHandler.withTextSelection = false
+        print("PASS: paste on click pastes hover choices into the remembered field, copies when off, and leaves ⌘⇧V pasting")
+
         for screen in [CGRect(x: 0, y: 0, width: 1470, height: 920), CGRect(x: -1920, y: 200, width: 1920, height: 1080)] {
             for anchor in [screen.origin, CGPoint(x: screen.maxX - 1, y: screen.maxY - 1),
                            CGPoint(x: screen.midX, y: screen.midY)] {
                 let origin = PickerPlacement.origin(anchor: CGRect(origin: anchor, size: .zero), visibleFrame: screen)
-                let surface = CGRect(x: origin.x + 30, y: origin.y + 102, width: 480, height: 468)
+                let surface = CGRect(x: origin.x + PanelMetrics.sidePadding, y: origin.y + PanelMetrics.bottomPadding,
+                    width: PanelMetrics.width, height: PanelMetrics.bodyHeight)
                 precondition(screen.contains(surface), "Caret picker must fit on its display")
             }
         }
@@ -131,7 +172,7 @@ struct InteractionTests {
         let notched = DisplayGeometry(frame: CGRect(x: 0, y: 0, width: 1470, height: 956),
             visibleFrame: CGRect(x: 0, y: 64, width: 1470, height: 855),
             notch: CGRect(x: 640, y: 919, width: 190, height: 37))
-        precondition(notched.notch != nil && notched.hoverPanelOrigin.y == 386)
+        precondition(notched.notch != nil && notched.hoverPanelOrigin.y == 956 - PanelMetrics.canvasHeight)
         precondition(notched.containsHoverPoint(CGPoint(x: 735, y: 956)))
         precondition(notched.keepsHoverOpen(at: CGPoint(x: 735, y: 956)))
         precondition(notched.hoverSurface.maxY == 956)
@@ -191,8 +232,9 @@ struct InteractionTests {
         precondition(abs(scroll.contentView.bounds.minY) < 0.5, "Visible selection must leave the viewport still")
         controller.state.selectedID = store.sorted[7].id
         pump(for: 0.04)
+        let listHeight = 20 * PanelMetrics.rowHeight + 19 * PanelMetrics.rowSpacing
         let target = KeyboardScrollMotion.reveal(index: 7, viewport: scroll.contentView.bounds.height,
-            contentHeight: 1097, from: 0)
+            contentHeight: listHeight, from: 0)
         if !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
             precondition(scroll.contentView.bounds.minY > 0 && scroll.contentView.bounds.minY < target,
                 "Offscreen selection should glide through intermediate positions")
@@ -200,7 +242,7 @@ struct InteractionTests {
         pump(for: 0.4)
         for _ in 8..<20 { key(125, characters: "\u{F701}") }
         pump(for: 0.4)
-        precondition(scroll.contentView.bounds.maxY >= 1096, "Held navigation must reveal the last row")
+        precondition(scroll.contentView.bounds.maxY >= listHeight - 1, "Held navigation must reveal the last row")
         controller.state.selectedID = store.sorted[0].id
         pump(for: 0.5)
         precondition(scroll.contentView.bounds.minY < 0.5, "Reversing direction must return smoothly to the first row")
@@ -316,7 +358,7 @@ struct InteractionTests {
         print("PASS: image Space/Escape preview, hover copy, and shortcut paste routing")
         inputWindow.orderOut(nil)
         print("PASS: interrupted close/reopen stays open and keyboard ready")
-        print("All 16 native interaction checks passed. Paste dispatch was mocked; no system keys were posted.")
+        print("All 17 native interaction checks passed. Paste dispatch was mocked; no system keys were posted.")
     }
 
     @MainActor static func key(_ code: UInt16, characters: String, modifiers: NSEvent.ModifierFlags = [], repeating: Bool = false) {

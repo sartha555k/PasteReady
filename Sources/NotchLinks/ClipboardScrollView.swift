@@ -7,8 +7,8 @@ struct KeyboardScrollMotion {
     var target: CGFloat = 0
 
     static func reveal(index: Int, viewport: CGFloat, contentHeight: CGFloat, from offset: CGFloat) -> CGFloat {
-        let top = CGFloat(index) * 55
-        let bottom = top + 52
+        let top = CGFloat(index) * PanelMetrics.rowPitch
+        let bottom = top + PanelMetrics.rowHeight
         let limit = max(0, contentHeight - viewport)
         if top < offset + 8 { return min(limit, max(0, top - 8)) }
         if bottom > offset + viewport - 8 { return min(limit, max(0, bottom - viewport + 8)) }

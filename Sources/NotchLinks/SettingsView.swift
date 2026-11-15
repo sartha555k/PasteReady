@@ -6,6 +6,7 @@ struct SettingsView: View {
     @ObservedObject var store: ClipboardStore
     let shortcutAvailable: Bool
     @AppStorage("disableHover") private var disableHover = false
+    @AppStorage(PanelState.pasteOnClickKey) private var pasteOnClick = true
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @State private var loginError: String?
     @State private var confirmClear = false
@@ -32,11 +33,17 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Label("Copy text, a link, or an image on your Mac.", systemImage: "doc.on.doc")
                 Label("Hover at the notch or top-center screen edge.", systemImage: "cursorarrow")
-                Label("With ⌘⇧V, choose an item to paste at your cursor.", systemImage: "return")
+                Label("Click an item, or use ⌘⇧V, to paste it at your cursor.", systemImage: "return")
             }.font(.system(size: 13)).foregroundStyle(.secondary)
             Divider()
             VStack(alignment: .leading, spacing: 14) {
                 preference("Open at notch or top screen edge", isOn: Binding(get: { !disableHover }, set: { disableHover = !$0 }))
+                VStack(alignment: .leading, spacing: 3) {
+                    preference("Paste on click", isOn: $pasteOnClick)
+                    Text(pasteOnClick ? "Clicking an item at the notch pastes it where your cursor was. With no text field active, it copies."
+                         : "Clicking an item at the notch only copies it.")
+                        .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                }
                 preference("Pause clipboard history", isOn: $store.paused)
                 preference("Launch at login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, enabled in
@@ -74,7 +81,7 @@ struct SettingsView: View {
                 Button("Clear recent") { store.clearRecent() }.disabled(store.links.allSatisfy(\.pinned))
                 Button("Delete all…", role: .destructive) { confirmClear = true }.disabled(store.links.isEmpty)
             }
-        }.padding(28).frame(width: 480, height: 630)
+        }.padding(28).frame(width: 480, height: 690)
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             pasteEnabled = PasteService.isEnabled
         }

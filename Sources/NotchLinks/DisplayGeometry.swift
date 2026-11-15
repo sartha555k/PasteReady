@@ -32,16 +32,18 @@ struct DisplayGeometry {
             point.y >= trigger.minY && point.y <= trigger.maxY
     }
     var hoverPanelOrigin: CGPoint {
-        if notch != nil { return CGPoint(x: frame.midX - 270, y: frame.maxY - 570) }
+        let m = PanelMetrics.self
+        if notch != nil { return CGPoint(x: frame.midX - m.canvasWidth / 2, y: frame.maxY - m.canvasHeight) }
         // A floating shelf below the menu bar, including side Dock offsets.
-        let left = min(max(frame.midX - 240, visibleFrame.minX + 10), visibleFrame.maxX - 490)
+        let left = min(max(frame.midX - m.width / 2, visibleFrame.minX + 10), visibleFrame.maxX - m.width - 10)
         let top = min(frame.maxY, visibleFrame.maxY) - 8
-        return CGPoint(x: left - 30, y: max(visibleFrame.minY + 478, top) - 570)
+        return CGPoint(x: left - m.sidePadding, y: max(visibleFrame.minY + m.bodyHeight + 10, top) - m.canvasHeight)
     }
     var hoverSurface: CGRect {
         let origin = hoverPanelOrigin
-        let height = 468 + (notch?.height ?? 0)
-        return CGRect(x: origin.x + 30, y: origin.y + 570 - height, width: 480, height: height)
+        let height = PanelMetrics.bodyHeight + (notch?.height ?? 0)
+        return CGRect(x: origin.x + PanelMetrics.sidePadding, y: origin.y + PanelMetrics.canvasHeight - height,
+            width: PanelMetrics.width, height: height)
     }
     var hoverBridge: CGRect {
         // Keep the shelf open while crossing from the edge through the menu-bar
