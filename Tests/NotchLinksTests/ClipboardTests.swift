@@ -22,7 +22,8 @@ final class ClipboardTests {
             ("PNG and TIFF persist and copy exact bytes", tests.testImagePersistence),
             ("image pins deduplication and retention", tests.testImageRetention),
             ("image polling privacy and precedence", tests.testImagePolling),
-            ("invalid images and missing attachments", tests.testImageFailures)
+            ("invalid images and missing attachments", tests.testImageFailures),
+            ("enable preference preserves history and skips disabled copies", tests.testEnablePreference)
         ]
         for (name, test) in cases {
             tests.setUp()
@@ -35,16 +36,21 @@ final class ClipboardTests {
     var directory: URL!
     var file: URL!
     var board: NSPasteboard!
+    var preferences: UserDefaults!
+    var preferencesName: String!
     func setUp() {
         directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         file = directory.appendingPathComponent("history.json")
         board = NSPasteboard.withUniqueName()
+        preferencesName = "PasteReady.Tests." + UUID().uuidString
+        preferences = UserDefaults(suiteName: preferencesName)!
     }
     func tearDown() {
         try? FileManager.default.removeItem(at: directory)
         board.releaseGlobally()
+        preferences.removePersistentDomain(forName: preferencesName)
     }
-    func makeStore() -> ClipboardStore { ClipboardStore(file: file, monitoring: false, pasteboard: board) }
+    func makeStore() -> ClipboardStore { ClipboardStore(file: file, monitoring: false, pasteboard: board, preferences: preferences) }
     func testExactTextSurvivesPersistenceAndCopy() {
         let store = makeStore()
         let value = "  A note\nwith a second line\tand spacing.  "
@@ -236,6 +242,38 @@ final class ClipboardTests {
         XCTAssertEqual(board.string(forType: .string), "Keep the current clipboard")
         let permissions = try FileManager.default.attributesOfItem(atPath: file.path)[.posixPermissions] as! NSNumber
         XCTAssertEqual(permissions.intValue, 0o600)
+    }
+
+    func testEnablePreference() {
+        let store = makeStore()
+        XCTAssertTrue(store.enabled)
+        store.capture("Saved favorite")
+        store.togglePin(store.links[0])
+        store.paused = true
+        store.enabled = false
+        XCTAssertFalse(makeStore().enabled)
+        XCTAssertTrue(store.paused)
+        board.clearContents(); board.setString("Copied while disabled", forType: .string)
+        store.poll()
+        store.capture("Direct capture while disabled")
+        let data = sampleImage(), metadata = ClipboardImageCodec.inspect(data, type: .png)
+        store.captureImage(data, metadata: metadata)
+        XCTAssertEqual(store.links.count, 1)
+        XCTAssertFalse(store.copy(store.links[0]))
+        XCTAssertEqual(board.string(forType: .string), "Copied while disabled")
+        store.enabled = true
+        XCTAssertTrue(makeStore().enabled)
+        XCTAssertTrue(store.paused) // Master switch does not overwrite the separate pause preference.
+        store.paused = false
+        store.poll()
+        XCTAssertEqual(store.links.count, 1) // No backfill of disabled clipboard contents.
+        board.clearContents(); board.setData(data, forType: .png)
+        store.poll(); store.enabled = false; store.enabled = true; pump()
+        XCTAssertEqual(store.links.count, 1) // In-flight image capture must be cancelled too.
+        board.clearContents(); board.setString("New copy after enabling", forType: .string)
+        store.poll()
+        XCTAssertEqual(store.links.count, 2)
+        XCTAssertTrue(makeStore().links.contains { $0.pinned && $0.content == "Saved favorite" })
     }
 
 }

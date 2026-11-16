@@ -7,7 +7,10 @@ struct RenderPreview {
         _ = NSApplication.shared
         let directory = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory: true)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        let store = ClipboardStore(file: directory.appendingPathComponent("unused-history.json"), monitoring: false)
+        let preferenceSuite = "PasteReady.Preview." + UUID().uuidString
+        let preferences = UserDefaults(suiteName: preferenceSuite)!
+        defer { preferences.removePersistentDomain(forName: preferenceSuite) }
+        let store = ClipboardStore(file: directory.appendingPathComponent("unused-history.json"), monitoring: false, preferences: preferences)
         let state = PanelState()
         state.phase = 2
         store.links = [
@@ -61,7 +64,9 @@ struct RenderPreview {
         store.links = []
         try render(PanelView(store: store, state: state), size: NSSize(width: PanelMetrics.canvasWidth, height: PanelMetrics.canvasHeight), to: directory.appendingPathComponent("empty.png"))
         try render(SettingsView(store: store, shortcutAvailable: true), size: NSSize(width: 480, height: 690), to: directory.appendingPathComponent("settings.png"))
-        print("Rendered eight native SwiftUI states to \(directory.path)")
+        store.enabled = false
+        try render(SettingsView(store: store, shortcutAvailable: true), size: NSSize(width: 480, height: 690), to: directory.appendingPathComponent("settings-disabled.png"))
+        print("Rendered native SwiftUI states to \(directory.path)")
     }
     @MainActor static func render<V: View>(_ view: V, size: NSSize, to file: URL) throws {
         let host = NSHostingView(rootView: view.background(Color(red: 0.13, green: 0.15, blue: 0.18)).environment(\.colorScheme, .dark))

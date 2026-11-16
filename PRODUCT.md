@@ -35,3 +35,6 @@ Space or the visible preview control toggles a read-only full-content preview. E
 
 ## Image history extension
 Confirmed: copied PNG and TIFF images join the history with a small aspect-fit thumbnail and a Space-toggle image preview. Existing All/Links/Pinned filters, copy controls, pins, 20-recent limit, local-only storage, and keyboard paste behavior apply. Images are stored as local attachments alongside the existing JSON, preserving old history and the app identity. The website is explicitly outside this update.
+
+## App enable switch
+Settings includes a persistent Enable PasteReady toggle. Disabled stops capture, hover and shortcut access, dismisses the panel, and cancels pending pastes while retaining history, pins and preferences. The menu bar and Settings remain reachable for re-enabling. Pause capture remains independent.

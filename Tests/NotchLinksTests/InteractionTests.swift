@@ -356,9 +356,29 @@ struct InteractionTests {
             "Shortcut selection must route the image payload through direct paste")
         precondition(pasteboard.data(forType: .png) == png)
         print("PASS: image Space/Escape preview, hover copy, and shortcut paste routing")
+        controller.open(keyboard: true); pump(for: 0.05)
+        let pasteCount = pasteHandler.pasted.count
+        controller.state.choose?(imageEntry)
+        store.enabled = false
+        pump(for: 0.25)
+        precondition(controller.state.phase == 0 && !controller.hasKeyboardFocus,
+            "Disabling must immediately dismiss the picker")
+        precondition(pasteHandler.pasted.count == pasteCount, "Disabling must cancel a pending selection paste")
+        controller.open(keyboard: true); controller.open(keyboard: false); controller.toggle()
+        pump(for: 0.08)
+        precondition(controller.state.phase == 0, "Disabled picker must ignore menu, shortcut, and hover opens")
+        let trigger = DisplayGeometry(screen: NSScreen.main!).hoverTrigger
+        move(CGPoint(x: trigger.midX, y: trigger.maxY))
+        precondition(controller.state.phase == 0, "Fast hover entry must stay inactive while disabled")
+        store.enabled = true
+        controller.open(keyboard: true); pump(for: 0.08)
+        precondition(controller.hasKeyboardFocus && controller.state.phase == 2,
+            "Re-enabling must restore picker access without restarting")
+        controller.close(); pump(for: 0.2)
+        print("PASS: master switch dismisses the picker, cancels pending paste, gates all opens, and restores access")
         inputWindow.orderOut(nil)
         print("PASS: interrupted close/reopen stays open and keyboard ready")
-        print("All 17 native interaction checks passed. Paste dispatch was mocked; no system keys were posted.")
+        print("All 18 native interaction checks passed. Paste dispatch was mocked; no system keys were posted.")
     }
 
     @MainActor static func key(_ code: UInt16, characters: String, modifiers: NSEvent.ModifierFlags = [], repeating: Bool = false) {

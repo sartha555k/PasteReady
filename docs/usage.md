@@ -40,3 +40,7 @@ If another utility owns Command–Shift–V, disable that utility’s shortcut a
 Run the install command in the [README](../README.md) again to get the latest release. History and pins are preserved. There is no automatic updater yet.
 
 Image support is part of the unreleased 0.5.0 development build. The existing curl command continues to install the latest published release; it will install image support once that release is published. Installed copies do not update automatically.
+
+## Enable or disable PasteReady
+
+In Settings, use **Enable PasteReady** to turn the app’s capture and popup access on or off. Turning it off dismisses the picker, cancels pending captures/pastes, and releases Command–Shift–V. The menu bar stays available so you can reopen Settings and enable it again. Your history, pins, and individual preferences stay saved, and the enabled state survives a restart. Copies made while disabled are skipped when you turn it back on. **Pause clipboard history** remains a separate control: it pauses capture while letting you use saved history.

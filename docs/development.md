@@ -19,7 +19,7 @@ The script creates `build/PasteReady.app` and `build/PasteReady.zip`, signing th
 ./scripts/test.sh
 ```
 
-Eleven executable checks cover exact text persistence/copying, deduplication, pinned retention, concealed and paused clipboard handling, filtering/search, size limits, preservation of a damaged history file, exact PNG/TIFF copying, image persistence and thumbnails, image retention/cleanup, private image skipping, and cancellation of pending image captures. The test runner uses a unique temporary pasteboard, not your general clipboard. It works with Command Line Tools without requiring XCTest/Xcode.
+Twelve executable checks cover exact text persistence/copying, deduplication, pinned retention, concealed and paused clipboard handling, filtering/search, size limits, preservation of a damaged history file, exact PNG/TIFF copying, image persistence and thumbnails, image retention/cleanup, private image skipping, cancellation of pending image captures, and persisted app enable state without backfilling disabled copies. The test runner uses a unique temporary pasteboard, not your general clipboard. It works with Command Line Tools without requiring XCTest/Xcode.
 
 Preview renders under `.impeccable/review/` use illustrative data, not personal clipboard content. The renderer is a development tool and is not bundled into the app.
 
@@ -36,3 +36,5 @@ Current builds use local ad-hoc signing. Developer ID signing and Apple notariza
 
 
 [Installer details](../distribution/README.md)
+
+The app-wide Settings switch is covered by store tests with isolated UserDefaults and native interaction checks for dismissal, pending-paste cancellation, blocked hover/menu/shortcut opens, and re-enabling without restarting. Run native render tools after keyboard tests finish; concurrent AppKit windows can interrupt focus checks.

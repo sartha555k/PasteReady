@@ -5,6 +5,7 @@ import ServiceManagement
 struct SettingsView: View {
     @ObservedObject var store: ClipboardStore
     let shortcutAvailable: Bool
+    var shortcutAvailability: (() -> Bool)? = nil
     @AppStorage("disableHover") private var disableHover = false
     @AppStorage(PanelState.pasteOnClickKey) private var pasteOnClick = true
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
@@ -21,6 +22,7 @@ struct SettingsView: View {
     }
 
     var body: some View {
+        ScrollView {
         VStack(alignment: .leading, spacing: 20) {
             HStack(spacing: 14) {
                 Image(systemName: "doc.on.clipboard").font(.system(size: 27, weight: .regular))
@@ -37,14 +39,22 @@ struct SettingsView: View {
             }.font(.system(size: 13)).foregroundStyle(.secondary)
             Divider()
             VStack(alignment: .leading, spacing: 14) {
-                preference("Open at notch or top screen edge", isOn: Binding(get: { !disableHover }, set: { disableHover = !$0 }))
+                VStack(alignment: .leading, spacing: 5) {
+                    preference("Enable PasteReady", isOn: $store.enabled)
+                    Text(store.enabled ? "Turn off clipboard capture, notch access, and ⌘⇧V together."
+                         : "PasteReady is off. Turn it on here to resume. Your saved items are kept.")
+                        .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                }
+                Divider()
+                preference("Open at notch or top screen edge", isOn: Binding(get: { !disableHover }, set: { disableHover = !$0 })).disabled(!store.enabled)
                 VStack(alignment: .leading, spacing: 3) {
                     preference("Paste on click", isOn: $pasteOnClick)
                     Text(pasteOnClick ? "Clicking an item at the notch pastes it where your cursor was. With no text field active, it copies."
                          : "Clicking an item at the notch only copies it.")
                         .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
-                preference("Pause clipboard history", isOn: $store.paused)
+                .disabled(!store.enabled)
+                preference("Pause clipboard history", isOn: $store.paused).disabled(!store.enabled)
                 preference("Launch at login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, enabled in
                         do { if enabled { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() } }
@@ -62,7 +72,7 @@ struct SettingsView: View {
                 Spacer()
                 Button(pasteEnabled ? "Settings…" : "Enable…") { PasteService.enable() }
             }
-            if !shortcutAvailable {
+            if store.enabled && !(shortcutAvailability?() ?? shortcutAvailable) {
                 Text("⌘⇧V is in use by another app. Open the picker from the menu bar, or disable the other app’s shortcut and restart PasteReady.")
                     .font(.caption).foregroundStyle(.orange)
             }
@@ -81,7 +91,8 @@ struct SettingsView: View {
                 Button("Clear recent") { store.clearRecent() }.disabled(store.links.allSatisfy(\.pinned))
                 Button("Delete all…", role: .destructive) { confirmClear = true }.disabled(store.links.isEmpty)
             }
-        }.padding(28).frame(width: 480, height: 690)
+        }.padding(28)
+        }.frame(width: 480, height: 690)
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             pasteEnabled = PasteService.isEnabled
         }

@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 import Carbon
+import Combine
 
 private final class ClipboardPanel: NSPanel {
     override var canBecomeKey: Bool { true }
@@ -14,6 +15,8 @@ private final class ClipboardHostingView: NSHostingView<PanelView> {
 final class NotchController {
     let state = PanelState()
     private let store: ClipboardStore
+    private var appEnabled: Bool
+    private var enabledObserver: AnyCancellable?
     private var panel: NSPanel!
     var hasKeyboardFocus: Bool { panel.isKeyWindow }
     private var timer: Timer?
@@ -45,6 +48,7 @@ final class NotchController {
     init(store: ClipboardStore, pasteHandler: PasteHandling = PasteService(),
          geometryForScreen: @escaping (NSScreen) -> DisplayGeometry = { DisplayGeometry(screen: $0) }) {
         self.store = store
+        appEnabled = store.enabled
         self.pasteHandler = pasteHandler
         self.geometryForScreen = geometryForScreen
         panel = ClipboardPanel(contentRect: NSRect(x: 0, y: 0, width: PanelMetrics.canvasWidth, height: PanelMetrics.canvasHeight),
@@ -68,10 +72,7 @@ final class NotchController {
             self?.onSettings?()
         }
         refreshHoverTargets()
-        let hoverTimer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in self?.trackMouse() }
-        hoverTimer.tolerance = 0.003
-        RunLoop.main.add(hoverTimer, forMode: .common)
-        timer = hoverTimer
+        if appEnabled { startHoverTimer() }
         let movement: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged]
         mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: movement) { [weak self] event in
             self?.trackMouse(at: event.cgEvent?.unflippedLocation ?? NSEvent.mouseLocation)
@@ -127,7 +128,10 @@ final class NotchController {
             if let self, self.panel.isVisible, self.state.phase > 0, event.window !== self.panel { self.close() }
             return event
         }
-        installHotKey()
+        if appEnabled { installHotKey() }
+        enabledObserver = store.$enabled.dropFirst().removeDuplicates().sink { [weak self] enabled in
+            self?.setAppEnabled(enabled)
+        }
         displayObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification,
             object: nil, queue: .main) { [weak self] _ in
                 self?.close()
@@ -144,7 +148,22 @@ final class NotchController {
         if let hotKey { UnregisterEventHotKey(hotKey) }
         if let eventHandler { RemoveEventHandler(eventHandler) }
     }
+    private func startHoverTimer() {
+        guard timer == nil else { return }
+        let hoverTimer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in self?.trackMouse() }
+        hoverTimer.tolerance = 0.003
+        RunLoop.main.add(hoverTimer, forMode: .common)
+        timer = hoverTimer
+    }
     private func installHotKey() {
+        if eventHandler == nil { installHotKeyHandler() }
+        guard hotKey == nil else { return }
+        let id = EventHotKeyID(signature: 0x4e4c4e4b, id: 1)
+        let result = RegisterEventHotKey(UInt32(kVK_ANSI_V), UInt32(cmdKey | shiftKey), id,
+            GetApplicationEventTarget(), 0, &hotKey)
+        shortcutAvailable = result == noErr
+    }
+    private func installHotKeyHandler() {
         var spec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
         let context = Unmanaged.passUnretained(self).toOpaque()
         InstallEventHandler(GetApplicationEventTarget(), { _, _, context in
@@ -153,12 +172,34 @@ final class NotchController {
             DispatchQueue.main.async { controller.toggle() }
             return noErr
         }, 1, &spec, context, &eventHandler)
-        let id = EventHotKeyID(signature: 0x4e4c4e4b, id: 1)
-        let result = RegisterEventHotKey(UInt32(kVK_ANSI_V), UInt32(cmdKey | shiftKey), id,
-            GetApplicationEventTarget(), 0, &hotKey)
-        shortcutAvailable = result == noErr
+    }
+    private func setAppEnabled(_ enabled: Bool) {
+        appEnabled = enabled
+        if enabled {
+            hoverIntent = HoverIntent()
+            startHoverTimer()
+            installHotKey()
+        } else {
+            timer?.invalidate()
+            timer = nil
+            // Cancel opening, closing, and pending paste completions immediately.
+            pasteHandler.cancel()
+            generation += 1
+            panel.orderOut(nil)
+            panel.alphaValue = 1
+            isClosing = false
+            state.phase = 0
+            state.opening = false
+            state.focusSearch = false
+            state.previewID = nil
+            pasteDestination = nil
+            outsideSince = nil
+            hoverIntent = HoverIntent()
+            if let hotKey { UnregisterEventHotKey(hotKey); self.hotKey = nil }
+        }
     }
     func toggle() {
+        guard appEnabled else { return }
         if state.phase == 2 && !isClosing { close() } else { open(keyboard: true) }
     }
     private var visibleRect: NSRect {
@@ -175,7 +216,7 @@ final class NotchController {
     }
     private func trackMouse(at pointer: CGPoint? = nil) {
         let point = pointer ?? NSEvent.mouseLocation
-        guard !isTrackingMenu, panel.attachedSheet == nil else { return }
+        guard appEnabled, !isTrackingMenu, panel.attachedSheet == nil else { return }
         let target = hoverTargets.first {
             point.x >= $0.trigger.minX && point.x <= $0.trigger.maxX &&
             point.y >= $0.trigger.minY && point.y <= $0.trigger.maxY
@@ -206,6 +247,7 @@ final class NotchController {
         }
     }
     func open(keyboard: Bool, screen: NSScreen? = nil) {
+        guard appEnabled else { return }
         pasteHandler.cancel()
         generation += 1
         let token = generation
@@ -314,12 +356,12 @@ final class NotchController {
     }
 
     private func choose(_ link: ClipboardEntry) {
-        guard !isClosing else { return }
+        guard appEnabled, !isClosing else { return }
         guard store.copy(link) else { return }
         let destination = state.pastes(pasteOnClick: PanelState.pasteOnClickEnabled) ? pasteDestination : nil
         if let destination {
             close(restorePreviousApp: false) { [weak self] in
-                guard let self else { return }
+                guard let self, self.appEnabled else { return }
                 let token = self.generation
                 self.pasteHandler.paste(to: destination, entry: link) { [weak self] outcome in
                     guard let self, self.generation == token else { return }

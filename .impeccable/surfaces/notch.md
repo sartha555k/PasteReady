@@ -12,3 +12,6 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 ## Image clipboard extension
 
 Keep the incumbent native black panel, SF type, row dimensions, and blue selection. Images join All and Pinned alongside text; Links stays link-only. Each image has a bounded aspect-fit thumbnail in the existing 32pt icon slot, a title, pixel dimensions and size, and the same copy/pin actions. Space toggles an aspect-fit image preview inside the existing preview area; Escape returns to the list. No website changes or update notifications. Finish with persistence/copy/retention regression checks, native render evidence, and an independent finish review.
+
+## App enable setting
+Add a native switch at the top of the existing Settings preferences group with a short enabled/disabled explanation. Keep existing SF typography and grouped surfaces; dim hover, paste-on-click and pause controls while disabled, preserve launch-at-login and history controls. Allow the Settings content to scroll inside the existing 480×690 window so the new row never clips lower settings. Menu bar reports disabled status and keeps Settings available.
